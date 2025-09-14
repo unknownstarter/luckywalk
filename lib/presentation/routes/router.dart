@@ -18,9 +18,6 @@ import '../screens/referral/referral_screen.dart';
 import '../screens/how_it_works/how_it_works_screen.dart';
 import '../screens/results/result_detail_screen.dart';
 import '../screens/results/kyc_form_screen.dart';
-import '../screens/admin/admin_screen.dart';
-import '../screens/admin/admin_rounds_screen.dart';
-import '../screens/admin/admin_round_detail_screen.dart';
 import '../screens/not_found/not_found_screen.dart';
 import '../widgets/main_shell.dart';
 
@@ -150,27 +147,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       
-      // 어드민
-      GoRoute(
-        path: '/admin',
-        name: 'admin',
-        builder: (context, state) => const AdminScreen(),
-        routes: [
-          GoRoute(
-            path: 'rounds',
-            name: 'admin-rounds',
-            builder: (context, state) => const AdminRoundsScreen(),
-          ),
-          GoRoute(
-            path: 'rounds/:roundId',
-            name: 'admin-round-detail',
-            builder: (context, state) {
-              final roundId = state.pathParameters['roundId']!;
-              return AdminRoundDetailScreen(roundId: roundId);
-            },
-          ),
-        ],
-      ),
     ],
     
     // 리다이렉트 로직
