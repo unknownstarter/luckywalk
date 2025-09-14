@@ -1,11 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class LoginScreen extends StatelessWidget {
+import '../../../providers/mock_auth_provider.dart';
+import '../../../core/logging/logger.dart';
+
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(mockAuthProvider);
+
+    // 로딩 상태 처리
+    if (authState.isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    // 에러 상태 처리
+    if (authState.error != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(authState.error!),
+            backgroundColor: Colors.red,
+            action: SnackBarAction(
+              label: '닫기',
+              textColor: Colors.white,
+              onPressed: () {
+                ref.read(mockAuthProvider.notifier).clearError();
+              },
+            ),
+          ),
+        );
+      });
+    }
     return Scaffold(
       backgroundColor: const Color(0xFF1E3A8A),
       body: SafeArea(
@@ -88,7 +126,7 @@ class LoginScreen extends StatelessWidget {
               
               // Apple 로그인 버튼
               ElevatedButton.icon(
-                onPressed: () => _handleAppleLogin(context),
+                onPressed: authState.isLoading ? null : () => _handleAppleLogin(context),
                 icon: const Icon(Icons.apple, color: Colors.white),
                 label: const Text(
                   'Apple로 로그인',
@@ -110,7 +148,7 @@ class LoginScreen extends StatelessWidget {
               
               // Kakao 로그인 버튼
               ElevatedButton.icon(
-                onPressed: () => _handleKakaoLogin(context),
+                onPressed: authState.isLoading ? null : () => _handleKakaoLogin(context),
                 icon: const Icon(Icons.chat, color: Colors.black),
                 label: const Text(
                   '카카오로 로그인',
@@ -163,18 +201,22 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  void _handleAppleLogin(BuildContext context) {
-    // TODO: Apple 로그인 구현
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Apple 로그인 기능을 구현 중입니다')),
-    );
+  Future<void> _handleAppleLogin(BuildContext context) async {
+    try {
+      AppLogger.info('Apple Sign In initiated');
+      await ref.read(mockAuthProvider.notifier).signInWithApple();
+    } catch (error) {
+      AppLogger.error('Apple Sign In failed: $error');
+    }
   }
 
-  void _handleKakaoLogin(BuildContext context) {
-    // TODO: Kakao 로그인 구현
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Kakao 로그인 기능을 구현 중입니다')),
-    );
+  Future<void> _handleKakaoLogin(BuildContext context) async {
+    try {
+      AppLogger.info('Kakao Sign In initiated');
+      await ref.read(mockAuthProvider.notifier).signInWithKakao();
+    } catch (error) {
+      AppLogger.error('Kakao Sign In failed: $error');
+    }
   }
 
   void _showTerms(BuildContext context) {
