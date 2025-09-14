@@ -103,23 +103,51 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   color: Colors.white70,
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 16),
               
-              // 보너스 당첨금 안내
+              // 로또6/45 정보
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Text(
-                  '매주 보너스 당첨금 1,500,000원',
-                  textAlign: TextAlign.center,
+                  '로또6/45 숫자 기반 당첨',
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
                     color: Colors.white,
+                    fontWeight: FontWeight.w500,
                   ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              
+              // 왕관 아이콘
+              const Icon(
+                Icons.emoji_events,
+                size: 80,
+                color: Colors.amber,
+              ),
+              const SizedBox(height: 16),
+              
+              // 보너스 당첨금 안내
+              const Text(
+                '매주 보너스 당첨금',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white70,
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                '1,500,000원',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
               const SizedBox(height: 48),
@@ -168,29 +196,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 32),
               
-              // 약관 링크
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton(
-                    onPressed: () => _showTerms(context),
-                    child: const Text(
-                      '이용약관',
-                      style: TextStyle(color: Colors.white70),
-                    ),
-                  ),
-                  const Text(
-                    ' | ',
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                  TextButton(
-                    onPressed: () => _showPrivacyPolicy(context),
-                    child: const Text(
-                      '개인정보처리방침',
-                      style: TextStyle(color: Colors.white70),
-                    ),
-                  ),
-                ],
+              // 약관 동의
+              const Text(
+                '회원가입 시 서비스 이용 약관 및 개인정보 수집 및 이용에 동의합니다.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white70,
+                ),
               ),
               
               const Spacer(),

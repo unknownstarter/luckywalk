@@ -117,6 +117,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ],
           ),
           const SizedBox(height: 8),
+          Row(
+            children: [
+              const Text(
+                '진행 중인 로또6/45',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E3A8A),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Text(
+                  '3일 남음',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
           Text(
             '${currentRound.roundNumber}회차',
             style: const TextStyle(fontSize: 18, color: Colors.grey),
@@ -147,30 +172,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () => context.go('/submit'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1E3A8A),
-                    foregroundColor: Colors.white,
-                  ),
-                  child: const Text('응모하기'),
-                ),
+          GestureDetector(
+            onTap: () {
+              // TODO: 어떻게 하는지 궁금해요 페이지로 이동
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('어떻게 하는지 궁금해요 페이지로 이동')),
+              );
+            },
+            child: const Text(
+              '어떻게 하는지 궁금해요 >',
+              style: TextStyle(
+                fontSize: 14,
+                color: Color(0xFF1E3A8A),
+                decoration: TextDecoration.underline,
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () => context.go('/how-it-works'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF1E3A8A),
-                    side: const BorderSide(color: Color(0xFF1E3A8A)),
-                  ),
-                  child: const Text('어떻게 하는지 궁금해요 >'),
-                ),
-              ),
-            ],
+            ),
           ),
         ],
       ),
@@ -220,7 +236,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 const SizedBox(width: 8),
                 const Expanded(
                   child: Text(
-                    '하루 한번 출첵하고 복권 3장 받기',
+                    '하루 한번 출첵하고\n복권 3장 받기',
                     style: TextStyle(fontSize: 16),
                   ),
                 ),
