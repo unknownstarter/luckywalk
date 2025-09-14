@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/logging/logger.dart';
+import '../../providers/auth_provider.dart';
+import '../guards/auth_guard.dart';
 import '../screens/splash/splash_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/onboarding/onboarding_screen.dart';
@@ -37,54 +39,75 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/login',
         name: 'login',
-        builder: (context, state) => const LoginScreen(),
+        builder: (context, state) => AuthGuardWidget(
+          requireUnauthenticated: true,
+          child: const LoginScreen(),
+        ),
       ),
       
       // 온보딩
       GoRoute(
         path: '/onboarding',
         name: 'onboarding',
-        builder: (context, state) => const OnboardingScreen(),
+        builder: (context, state) => AuthGuardWidget(
+          requireOnboardingOnly: true,
+          child: const OnboardingScreen(),
+        ),
       ),
       
       // 메인 앱 (Shell Route)
       ShellRoute(
         builder: (context, state, child) => MainShell(child: child),
         routes: [
-          // 홈
-          GoRoute(
-            path: '/home',
-            name: 'home',
-            builder: (context, state) => const HomeScreen(),
+        // 홈
+        GoRoute(
+          path: '/home',
+          name: 'home',
+          builder: (context, state) => AuthGuardWidget(
+            requireOnboarding: true,
+            child: const HomeScreen(),
           ),
-          
-          // 응모하기 (모달 라우트)
-          GoRoute(
-            path: '/submit',
-            name: 'submit',
-            builder: (context, state) => const SubmitModalScreen(),
+        ),
+        
+        // 응모하기 (모달 라우트)
+        GoRoute(
+          path: '/submit',
+          name: 'submit',
+          builder: (context, state) => AuthGuardWidget(
+            requireOnboarding: true,
+            child: const SubmitModalScreen(),
           ),
-          
-          // 내 응모
-          GoRoute(
-            path: '/my-tickets',
-            name: 'my-tickets',
-            builder: (context, state) => const MyTicketsScreen(),
+        ),
+        
+        // 내 응모
+        GoRoute(
+          path: '/my-tickets',
+          name: 'my-tickets',
+          builder: (context, state) => AuthGuardWidget(
+            requireOnboarding: true,
+            child: const MyTicketsScreen(),
           ),
-          
-          // 응모 결과
-          GoRoute(
-            path: '/results',
-            name: 'results',
-            builder: (context, state) => const ResultsScreen(),
+        ),
+        
+        // 응모 결과
+        GoRoute(
+          path: '/results',
+          name: 'results',
+          builder: (context, state) => AuthGuardWidget(
+            requireOnboarding: true,
+            child: const ResultsScreen(),
           ),
-          
-          // 설정
-          GoRoute(
-            path: '/settings',
-            name: 'settings',
-            builder: (context, state) => const SettingsScreen(),
+        ),
+        
+        // 설정
+        GoRoute(
+          path: '/settings',
+          name: 'settings',
+          builder: (context, state) => AuthGuardWidget(
+            requireOnboarding: true,
+            child: const SettingsScreen(),
           ),
+        ),
         ],
       ),
       
