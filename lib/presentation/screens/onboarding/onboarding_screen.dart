@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class OnboardingScreen extends StatefulWidget {
+import '../../../providers/mock_auth_provider.dart';
+import '../../../core/logging/logger.dart';
+
+class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   int _currentStep = 0;
   final PageController _pageController = PageController();
 
@@ -260,7 +264,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       );
     } else {
       // 온보딩 완료
-      context.go('/home');
+      _completeOnboarding();
+    }
+  }
+
+  Future<void> _completeOnboarding() async {
+    try {
+      AppLogger.info('Onboarding completed');
+      await ref.read(mockAuthProvider.notifier).completeOnboarding();
+      // AuthGuard가 자동으로 홈으로 리다이렉트
+    } catch (error) {
+      AppLogger.error('Complete onboarding failed: $error');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('온보딩 완료 중 오류가 발생했습니다: $error'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 }
