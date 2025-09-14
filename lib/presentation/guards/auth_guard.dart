@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../providers/auth_provider.dart';
+import '../../providers/mock_auth_provider.dart';
 import '../../core/logging/logger.dart';
 
 class AuthGuard {
   /// 인증된 사용자만 접근 허용
   static bool canAccess(BuildContext context, WidgetRef ref) {
-    final authState = ref.read(authProvider);
+    final authState = ref.read(mockAuthProvider);
     
     if (authState.isLoading) {
       AppLogger.info('Auth guard: Still loading, allowing access');
@@ -27,7 +27,7 @@ class AuthGuard {
 
   /// 온보딩 완료된 사용자만 접근 허용
   static bool canAccessWithOnboarding(BuildContext context, WidgetRef ref) {
-    final authState = ref.read(authProvider);
+    final authState = ref.read(mockAuthProvider);
     
     if (authState.isLoading) {
       AppLogger.info('Auth guard: Still loading, allowing access');
@@ -52,7 +52,7 @@ class AuthGuard {
 
   /// 로그인되지 않은 사용자만 접근 허용 (로그인 화면용)
   static bool canAccessUnauthenticated(BuildContext context, WidgetRef ref) {
-    final authState = ref.read(authProvider);
+    final authState = ref.read(mockAuthProvider);
     
     if (authState.isLoading) {
       AppLogger.info('Auth guard: Still loading, allowing access');
@@ -76,7 +76,7 @@ class AuthGuard {
 
   /// 온보딩 완료되지 않은 사용자만 접근 허용 (온보딩 화면용)
   static bool canAccessOnboarding(BuildContext context, WidgetRef ref) {
-    final authState = ref.read(authProvider);
+    final authState = ref.read(mockAuthProvider);
     
     if (authState.isLoading) {
       AppLogger.info('Auth guard: Still loading, allowing access');

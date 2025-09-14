@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../providers/auth_provider.dart';
+import '../../../providers/mock_auth_provider.dart';
 import '../../../core/logging/logger.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -44,10 +44,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authProvider);
+    final authState = ref.watch(mockAuthProvider);
 
     // 인증 상태 변화 감지 및 네비게이션
-    ref.listen<AuthState>(authProvider, (previous, next) {
+    ref.listen<MockAuthState>(mockAuthProvider, (previous, next) {
       if (!_hasNavigated && !next.isLoading) {
         _hasNavigated = true;
         _navigateBasedOnAuthState(next);
@@ -115,7 +115,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     );
   }
 
-  Widget _buildLoadingState(AuthState authState) {
+  Widget _buildLoadingState(MockAuthState authState) {
     if (authState.error != null) {
       return Column(
         children: [
@@ -144,7 +144,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              ref.invalidate(authProvider);
+              ref.invalidate(mockAuthProvider);
               _hasNavigated = false;
             },
             child: const Text('다시 시도'),
@@ -172,7 +172,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              ref.invalidate(authProvider);
+              ref.invalidate(mockAuthProvider);
               _hasNavigated = false;
             },
             child: const Text('다시 시도'),
@@ -222,7 +222,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     );
   }
 
-  void _navigateBasedOnAuthState(AuthState authState) {
+  void _navigateBasedOnAuthState(MockAuthState authState) {
     if (!mounted) return;
 
     AppLogger.info('Navigating based on auth state: $authState');

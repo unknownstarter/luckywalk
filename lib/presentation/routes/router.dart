@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/logging/logger.dart';
-import '../../providers/auth_provider.dart';
+import '../../providers/mock_auth_provider.dart';
 import '../guards/auth_guard.dart';
 import '../screens/splash/splash_screen.dart';
 import '../screens/auth/login_screen.dart';
