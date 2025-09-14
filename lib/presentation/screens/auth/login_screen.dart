@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../providers/mock_auth_provider.dart';
 import '../../../core/logging/logger.dart';
@@ -232,35 +231,4 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  void _showTerms(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('이용약관'),
-        content: const Text('이용약관 내용이 여기에 표시됩니다.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('확인'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showPrivacyPolicy(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('개인정보처리방침'),
-        content: const Text('개인정보처리방침 내용이 여기에 표시됩니다.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('확인'),
-          ),
-        ],
-      ),
-    );
-  }
 }

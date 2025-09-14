@@ -16,6 +16,7 @@ class Env {
   static const String appName = 'LuckyWalk';
   static const String appVersion = '1.0.0';
   static const String appBuildNumber = '1';
+  static const String minSupportedAppVersion = '1.0.0';
   
   // API Configuration
   static const String apiBaseUrl = 'https://your-project.supabase.co/functions/v1';

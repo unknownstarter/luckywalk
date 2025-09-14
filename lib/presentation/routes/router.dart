@@ -1,9 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../core/logging/logger.dart';
-import '../../providers/mock_auth_provider.dart';
 import '../guards/auth_guard.dart';
 import '../screens/splash/splash_screen.dart';
 import '../screens/auth/login_screen.dart';
@@ -17,6 +13,7 @@ import '../screens/rewards/ads_reward_screen.dart';
 import '../screens/rewards/steps_reward_screen.dart';
 import '../screens/attendance/attendance_screen.dart';
 import '../screens/referral/referral_screen.dart';
+import '../screens/referral/referral_join_screen.dart';
 import '../screens/how_it_works/how_it_works_screen.dart';
 import '../screens/results/result_detail_screen.dart';
 import '../screens/results/kyc_form_screen.dart';

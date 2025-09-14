@@ -62,7 +62,7 @@ dependencies:
   
   # Health & Fitness
   health: ^10.1.0
-  pedometer: ^3.0.1
+  pedometer: ^4.1.1
   
   # Ads
   google_mobile_ads: ^4.0.0

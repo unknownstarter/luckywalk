@@ -85,7 +85,7 @@ final mockAuthProvider = StateNotifierProvider<MockAuthNotifier, MockAuthState>(
 });
 
 class MockAuthNotifier extends StateNotifier<MockAuthState> {
-  StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
+  StreamSubscription<ConnectivityResult>? _connectivitySubscription;
   Timer? _sessionTimer;
 
   MockAuthNotifier() : super(const MockAuthState()) {
@@ -104,7 +104,7 @@ class MockAuthNotifier extends StateNotifier<MockAuthState> {
       
       // 네트워크 상태 구독
       _connectivitySubscription = Connectivity().onConnectivityChanged.listen(
-        (List<ConnectivityResult> results) => _handleConnectivityChange(results),
+        (ConnectivityResult result) => _handleConnectivityChange(result),
       );
 
       // Mock 세션 복원 (SharedPreferences 시뮬레이션)
@@ -143,10 +143,8 @@ class MockAuthNotifier extends StateNotifier<MockAuthState> {
 
   Future<void> _checkNetworkConnection() async {
     try {
-      final connectivityResults = await Connectivity().checkConnectivity();
-      final hasConnection = connectivityResults.any(
-        (result) => result != ConnectivityResult.none,
-      );
+      final connectivityResult = await Connectivity().checkConnectivity();
+      final hasConnection = connectivityResult != ConnectivityResult.none;
       
       state = state.copyWith(hasNetworkConnection: hasConnection);
       AppLogger.info('Mock Auth: Network connection: $hasConnection');
@@ -156,10 +154,8 @@ class MockAuthNotifier extends StateNotifier<MockAuthState> {
     }
   }
 
-  void _handleConnectivityChange(List<ConnectivityResult> results) {
-    final hasConnection = results.any(
-      (result) => result != ConnectivityResult.none,
-    );
+  void _handleConnectivityChange(ConnectivityResult result) {
+    final hasConnection = result != ConnectivityResult.none;
     
     state = state.copyWith(hasNetworkConnection: hasConnection);
     AppLogger.info('Mock Auth: Network connectivity changed: $hasConnection');

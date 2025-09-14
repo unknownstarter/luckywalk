@@ -44,7 +44,7 @@ class MainShell extends StatelessWidget {
   }
 
   int _getCurrentIndex(BuildContext context) {
-    final location = GoRouterState.of(context).subloc;
+    final location = GoRouterState.of(context).uri.path;
     switch (location) {
       case '/home':
         return 0;
