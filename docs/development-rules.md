@@ -1,8 +1,8 @@
 # LuckyWalk 개발 룰 & 가이드라인
 
-**현재 버전**: v1.2.0  
-**마지막 업데이트**: 2025-09-15 23:56:04 KST  
-**상태**: Mock 데이터 사용 중, Firebase/Google Mobile Ads 임시 제거, 코드 품질 개선 완료
+**현재 버전**: v1.2.1  
+**마지막 업데이트**: 2025-09-16 00:03:26 KST  
+**상태**: Mock 데이터 사용 중, Firebase/Google Mobile Ads 임시 제거, 코드 품질 개선 완료, 다른 컴퓨터 작업 가이드 추가
 
 > 📋 **룰 히스토리**: `docs/development-rules-history.md` 참조
 
@@ -307,6 +307,112 @@ try {
 - Material Design 가이드라인
 - 뒤로가기 버튼 처리
 - 상태바 스타일
+
+## 💻 **다른 컴퓨터에서 작업 시 주의사항**
+
+### **📋 프로젝트 복원 절차**
+```bash
+# 1. 프로젝트 클론
+git clone https://github.com/unknownstarter/luckywalk.git
+cd luckywalk
+
+# 2. 의존성 설치
+flutter pub get
+
+# 3. iOS 설정 (macOS에서만)
+cd ios
+pod install
+cd ..
+
+# 4. 앱 실행
+flutter run
+```
+
+### **⚠️ 필수 주의사항**
+
+#### **1. Flutter SDK 버전**
+- **동일한 Flutter SDK 버전 사용 권장**
+- **버전 확인**: `flutter --version`
+- **현재 권장 버전**: Flutter 3.x (최신 안정 버전)
+- **버전 불일치 시**: 빌드 오류, 호환성 문제 발생 가능
+
+#### **2. 플랫폼별 필수 설치**
+
+##### **iOS 개발 (macOS만)**
+- **Xcode**: 최신 버전 설치 (App Store에서)
+- **CocoaPods**: `sudo gem install cocoapods`
+- **iOS 시뮬레이터**: Xcode에서 자동 설치
+- **확인 방법**: `xcodebuild -version`, `pod --version`
+
+##### **Android 개발 (모든 OS)**
+- **Android Studio**: 최신 버전 설치
+- **Android SDK**: Android Studio에서 자동 설치
+- **Android 에뮬레이터**: Android Studio에서 설정
+- **확인 방법**: `flutter doctor` 실행
+
+#### **3. 환경 변수 설정**
+- **필요시 `.env` 파일 생성** (민감한 정보용)
+- **환경 변수 예시**:
+  ```bash
+  # .env 파일 (Git에 포함하지 않음)
+  SUPABASE_URL=your_supabase_url
+  SUPABASE_ANON_KEY=your_supabase_anon_key
+  ADMOB_APP_ID=your_admob_app_id
+  ```
+- **환경 변수 로드**: `flutter_dotenv` 패키지 사용
+
+#### **4. 개발 도구 설정**
+- **VS Code**: Flutter, Dart 확장 프로그램 설치
+- **Android Studio**: Flutter 플러그인 설치
+- **Git**: 최신 버전 설치 및 설정
+
+### **🔍 환경 확인 체크리스트**
+
+#### **Flutter 환경 확인**
+```bash
+# Flutter 환경 전체 확인
+flutter doctor
+
+# 예상 결과: 모든 항목이 ✅ 표시되어야 함
+# ❌ 표시된 항목은 해당 플랫폼에서 개발 불가
+```
+
+#### **필수 확인 사항**
+- [ ] **Flutter SDK 설치**: `flutter --version`
+- [ ] **Dart SDK 포함**: Flutter와 함께 자동 설치
+- [ ] **Android 개발 환경**: Android Studio, SDK, 에뮬레이터
+- [ ] **iOS 개발 환경** (macOS만): Xcode, CocoaPods, 시뮬레이터
+- [ ] **Git 설정**: 사용자 정보, SSH 키 설정
+- [ ] **에디터 설정**: VS Code 또는 Android Studio 플러그인
+
+### **🚨 문제 해결**
+
+#### **일반적인 문제들**
+1. **Flutter 버전 불일치**
+   - 해결: `flutter upgrade` 또는 특정 버전 설치
+   
+2. **iOS 빌드 실패**
+   - 해결: `cd ios && pod install && cd ..`
+   
+3. **Android 빌드 실패**
+   - 해결: `flutter clean && flutter pub get`
+   
+4. **폰트/에셋 로드 실패**
+   - 해결: `flutter clean && flutter pub get`
+
+#### **에셋 파일 확인**
+```bash
+# 에셋 파일들이 제대로 포함되었는지 확인
+git ls-files | grep -E "\.(ttf|otf|woff|woff2|svg|png|jpg|jpeg)$"
+
+# 예상 결과: 모든 폰트, 이미지 파일들이 나열되어야 함
+```
+
+### **📚 참고 자료**
+- **Flutter 설치 가이드**: https://docs.flutter.dev/get-started/install
+- **Android Studio 설정**: https://developer.android.com/studio
+- **Xcode 설정**: https://developer.apple.com/xcode/
+- **Git 설정**: https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup
 
 ## 🔄 **Git 룰**
 

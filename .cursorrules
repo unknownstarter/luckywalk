@@ -275,6 +275,7 @@ final data = ref.watch(provider).value;
 - ✅ **Deprecated API 업데이트** (withOpacity, printTime)
 - ✅ **Async Context 안전성 개선** (mounted 체크)
 - ✅ **Task 관리 문서 작성** (project-tasks.md)
+- ✅ **다른 컴퓨터 작업 가이드 추가** (개발 환경 설정, 문제 해결)
 - ⏳ Supabase 연동 예정
 - ⏳ 실제 데이터 연동 예정
 
