@@ -208,6 +208,39 @@ final data = ref.watch(provider).value;
 3. **일관된 네이밍 컨벤션**
 4. **에러 처리 및 로깅 필수**
 5. **성능 최적화 고려**
+6. **📅 날짜/시간 기록 필수** - 모든 히스토리/업데이트 문서에 정확한 날짜/시간 기록
+
+### 📅 날짜/시간 기록 규칙 (필수)
+**모든 히스토리나 업데이트 문서에는 반드시 정확한 날짜와 시간을 기록해야 합니다.**
+
+#### **기록 형식**
+- **형식**: `YYYY-MM-DD HH:MM:SS KST`
+- **예시**: `2024-09-15 16:45:00 KST`
+- **시간대**: `KST` (한국 표준시) 사용
+
+#### **기록 대상 문서**
+- `docs/development-rules-history.md` - 룰 히스토리
+- `docs/development-rules.md` - 개발 룰
+- `docs/temporary-removals.md` - 임시 제거 기능
+- `docs/design-system.md` - 디자인 시스템
+- `.cursorrules` - Cursor AI 룰
+- `README.md` - 프로젝트 README
+
+#### **기록 시점**
+- **문서 생성 시**: 생성일 기록
+- **문서 수정 시**: 마지막 업데이트일 기록
+- **버전 업데이트 시**: 버전별 날짜/시간 기록
+- **기능 추가/제거 시**: 해당 기능의 날짜/시간 기록
+
+#### **기록 예시**
+```markdown
+### **v1.2.0 (2024-09-15 16:45:00 KST) - 코드 품질 개선 & 이슈 해결**
+- ✅ AppTextStyle 충돌 해결: enum과 class 충돌 문제 해결
+- ✅ Deprecated API 업데이트: withOpacity → withValues, printTime → dateTimeFormat
+- ✅ 불필요한 중괄호 제거: `${variable}` → `$variable`로 단순화 (8개 파일)
+- ✅ Async Context 안전성: BuildContext 사용 시 `mounted` 체크 추가
+- ✅ 빌드 안정성: 32개 이슈 → 0개 이슈로 해결
+```
 
 ### 금지 사항
 - 하드코딩된 색상값 사용
@@ -215,6 +248,7 @@ final data = ref.watch(provider).value;
 - 에러 처리 없는 API 호출
 - 불필요한 setState 호출
 - 중복 코드 작성
+- **날짜/시간 없는 히스토리/업데이트 문서 작성**
 
 ## 📚 **참고 문서**
 - `docs/design-system.md`: 디자인 시스템 가이드
