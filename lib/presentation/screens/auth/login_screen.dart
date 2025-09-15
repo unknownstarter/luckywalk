@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../providers/mock_auth_provider.dart';
 import '../../../core/logging/logger.dart';
-import '../../shared/index.dart';
+import '../../shared/text_styles/app_text_style.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -84,7 +84,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Text(

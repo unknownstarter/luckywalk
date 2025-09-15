@@ -80,10 +80,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 size: 24,
               ),
               const SizedBox(width: 8),
-              const AppText(
-                '진행 중인 로또6/45',
-                style: AppTextStyle.subtitle,
-              ),
+              const AppText('진행 중인 로또6/45', style: AppTextStyle.subtitle),
               const Spacer(),
               const AppBadge(
                 text: '3일 남음',
@@ -112,7 +109,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           const SizedBox(height: 8),
           Row(
             children: [
-              const Icon(Icons.access_time, size: 16, color: AppColors.textSecondary),
+              const Icon(
+                Icons.access_time,
+                size: 16,
+                color: AppColors.textSecondary,
+              ),
               const SizedBox(width: 4),
               const AppText(
                 '2025.09.29 오후 9시 발표 예정',
@@ -188,7 +189,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: userProfile.attendanceChecked ? null : () => _handleAttendanceCheck(),
+                  onPressed: userProfile.attendanceChecked
+                      ? null
+                      : () => _handleAttendanceCheck(),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF1E3A8A),
                   ),
@@ -227,10 +230,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ],
             ),
             const SizedBox(height: 12),
-            _buildStepRewardItem('1,000 걸음 걷고', 1000, 1, userProfile.stepsRewards[1000] ?? false, userProfile.todaySteps >= 1000),
-            _buildStepRewardItem('2,000 걸음 걷고', 2000, 1, userProfile.stepsRewards[2000] ?? false, userProfile.todaySteps >= 2000),
-            _buildStepRewardItem('3,000 걸음 걷고', 3000, 1, userProfile.stepsRewards[3000] ?? false, userProfile.todaySteps >= 3000),
-            _buildStepRewardItem('4,000 걸음 걷고', 4000, 3, userProfile.stepsRewards[4000] ?? false, userProfile.todaySteps >= 4000),
+            _buildStepRewardItem(
+              '1,000 걸음 걷고',
+              1000,
+              1,
+              userProfile.stepsRewards[1000] ?? false,
+              userProfile.todaySteps >= 1000,
+            ),
+            _buildStepRewardItem(
+              '2,000 걸음 걷고',
+              2000,
+              1,
+              userProfile.stepsRewards[2000] ?? false,
+              userProfile.todaySteps >= 2000,
+            ),
+            _buildStepRewardItem(
+              '3,000 걸음 걷고',
+              3000,
+              1,
+              userProfile.stepsRewards[3000] ?? false,
+              userProfile.todaySteps >= 3000,
+            ),
+            _buildStepRewardItem(
+              '4,000 걸음 걷고',
+              4000,
+              3,
+              userProfile.stepsRewards[4000] ?? false,
+              userProfile.todaySteps >= 4000,
+            ),
           ],
         ),
       ),
@@ -252,12 +279,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              '$title: 복권 ${rewardCount}장 받기',
+              '$title: 복권 $rewardCount장 받기',
               style: TextStyle(color: isClaimed ? Colors.grey : Colors.black),
             ),
           ),
           ElevatedButton(
-            onPressed: isClaimed ? null : (isAvailable ? () => _handleStepsReward(steps) : null),
+            onPressed: isClaimed
+                ? null
+                : (isAvailable ? () => _handleStepsReward(steps) : null),
             style: ElevatedButton.styleFrom(
               backgroundColor: isClaimed
                   ? Colors.grey
@@ -295,10 +324,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ],
             ),
             const SizedBox(height: 12),
-            _buildAdRewardItem('1번째 광고보고', 1, 1, userProfile.adsRewards[1] ?? false, true),
-            _buildAdRewardItem('2번째 광고보고', 2, 1, userProfile.adsRewards[2] ?? false, userProfile.adsRewards[1] == true),
-            _buildAdRewardItem('3번째 광고보고', 3, 1, userProfile.adsRewards[3] ?? false, userProfile.adsRewards[2] == true),
-            _buildAdRewardItem('4번째 광고보고', 4, 3, userProfile.adsRewards[4] ?? false, userProfile.adsRewards[3] == true),
+            _buildAdRewardItem(
+              '1번째 광고보고',
+              1,
+              1,
+              userProfile.adsRewards[1] ?? false,
+              true,
+            ),
+            _buildAdRewardItem(
+              '2번째 광고보고',
+              2,
+              1,
+              userProfile.adsRewards[2] ?? false,
+              userProfile.adsRewards[1] == true,
+            ),
+            _buildAdRewardItem(
+              '3번째 광고보고',
+              3,
+              1,
+              userProfile.adsRewards[3] ?? false,
+              userProfile.adsRewards[2] == true,
+            ),
+            _buildAdRewardItem(
+              '4번째 광고보고',
+              4,
+              3,
+              userProfile.adsRewards[4] ?? false,
+              userProfile.adsRewards[3] == true,
+            ),
           ],
         ),
       ),
@@ -320,12 +373,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              '$title: 복권 ${rewardCount}장 받기',
+              '$title: 복권 $rewardCount장 받기',
               style: TextStyle(color: isClaimed ? Colors.grey : Colors.black),
             ),
           ),
           ElevatedButton(
-            onPressed: isClaimed ? null : (isAvailable ? () => _handleAdReward(sequence) : null),
+            onPressed: isClaimed
+                ? null
+                : (isAvailable ? () => _handleAdReward(sequence) : null),
             style: ElevatedButton.styleFrom(
               backgroundColor: isClaimed
                   ? Colors.grey
@@ -360,7 +415,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-
   Future<void> _handleAttendanceCheck() async {
     try {
       await ref.read(mockUserProfileProvider.notifier).checkAttendance();
@@ -390,7 +444,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${steps}걸음 보상 완료! 복권을 받았습니다.'),
+            content: Text('$steps걸음 보상 완료! 복권을 받았습니다.'),
             backgroundColor: Colors.green,
           ),
         );
@@ -413,7 +467,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${sequence}번째 광고 보상 완료! 복권을 받았습니다.'),
+            content: Text('$sequence번째 광고 보상 완료! 복권을 받았습니다.'),
             backgroundColor: Colors.green,
           ),
         );

@@ -271,16 +271,18 @@ class _SubmitModalScreenState extends State<SubmitModalScreen> {
 
     // 시뮬레이션된 응모 처리
     Future.delayed(const Duration(seconds: 2), () {
-      Navigator.of(context).pop(); // 로딩 다이얼로그 닫기
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$_ticketCount장 응모 완료!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-      
-      context.pop(); // 모달 닫기
+      if (mounted) {
+        Navigator.of(context).pop(); // 로딩 다이얼로그 닫기
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$_ticketCount장 응모 완료!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        
+        context.pop(); // 모달 닫기
+      }
     });
   }
 }

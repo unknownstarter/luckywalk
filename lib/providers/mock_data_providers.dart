@@ -191,7 +191,7 @@ class MockUserProfileNotifier extends StateNotifier<MockUserProfile> {
     }
 
     if (state.todaySteps < steps) {
-      throw Exception('아직 ${steps}걸음을 달성하지 못했습니다.');
+      throw Exception('아직 $steps걸음을 달성하지 못했습니다.');
     }
 
     // Mock: 1초 지연
@@ -208,7 +208,7 @@ class MockUserProfileNotifier extends StateNotifier<MockUserProfile> {
       totalTickets: state.totalTickets + rewardTickets,
     );
 
-    AppLogger.info('Steps reward claimed: ${steps} steps -> ${rewardTickets} tickets');
+    AppLogger.info('Steps reward claimed: $steps steps -> $rewardTickets tickets');
   }
 
   // 광고 보상 수령
@@ -242,7 +242,7 @@ class MockUserProfileNotifier extends StateNotifier<MockUserProfile> {
       totalTickets: state.totalTickets + rewardTickets,
     );
 
-    AppLogger.info('Ad reward claimed: sequence ${sequence} -> ${rewardTickets} tickets');
+    AppLogger.info('Ad reward claimed: sequence $sequence -> $rewardTickets tickets');
   }
 
   // 복권 응모
@@ -266,13 +266,13 @@ class MockUserProfileNotifier extends StateNotifier<MockUserProfile> {
       totalTickets: state.totalTickets - ticketCount,
     );
 
-    AppLogger.info('Tickets submitted: ${ticketCount} tickets');
+    AppLogger.info('Tickets submitted: $ticketCount tickets');
   }
 
   // 걸음수 업데이트
   void updateSteps(int steps) {
     state = state.copyWith(todaySteps: steps);
-    AppLogger.info('Steps updated: ${steps}');
+    AppLogger.info('Steps updated: $steps');
   }
 
   // 일일 리셋 (자정에 호출)
@@ -384,7 +384,7 @@ class MockTicketsNotifier extends StateNotifier<List<MockTicket>> {
     }
 
     state = [...state, ...newTickets];
-    AppLogger.info('Added ${ticketCount} tickets for round $roundId');
+    AppLogger.info('Added $ticketCount tickets for round $roundId');
   }
 
   // 특정 회차의 응모 내역 조회

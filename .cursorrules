@@ -234,6 +234,10 @@ final data = ref.watch(provider).value;
 - ✅ **폰트 시스템 구축** (Baloo + Pretendard)
 - ✅ **스플래시/로그인 화면 완성** (그라데이션 + 폰트)
 - ✅ **Assets 구조 설정** (이미지, 폰트)
+- ✅ **코드 품질 개선 완료** (32개 이슈 → 0개 해결)
+- ✅ **AppTextStyle 충돌 해결** (enum vs class)
+- ✅ **Deprecated API 업데이트** (withOpacity, printTime)
+- ✅ **Async Context 안전성 개선** (mounted 체크)
 - ⏳ Supabase 연동 예정
 - ⏳ 실제 데이터 연동 예정
 
