@@ -215,7 +215,7 @@ final data = ref.watch(provider).value;
 
 #### **기록 형식**
 - **형식**: `YYYY-MM-DD HH:MM:SS KST`
-- **예시**: `2024-09-15 16:45:00 KST`
+- **예시**: `2025-09-16 00:06:48 KST`
 - **시간대**: `KST` (한국 표준시) 사용
 
 #### **기록 대상 문서**
@@ -232,16 +232,6 @@ final data = ref.watch(provider).value;
 - **문서 수정 시**: 마지막 업데이트일 기록
 - **버전 업데이트 시**: 버전별 날짜/시간 기록
 - **기능 추가/제거 시**: 해당 기능의 날짜/시간 기록
-
-#### **기록 예시**
-```markdown
-### **v1.2.0 (2024-09-15 16:45:00 KST) - 코드 품질 개선 & 이슈 해결**
-- ✅ AppTextStyle 충돌 해결: enum과 class 충돌 문제 해결
-- ✅ Deprecated API 업데이트: withOpacity → withValues, printTime → dateTimeFormat
-- ✅ 불필요한 중괄호 제거: `${variable}` → `$variable`로 단순화 (8개 파일)
-- ✅ Async Context 안전성: BuildContext 사용 시 `mounted` 체크 추가
-- ✅ 빌드 안정성: 32개 이슈 → 0개 이슈로 해결
-```
 
 ### 금지 사항
 - 하드코딩된 색상값 사용
@@ -260,7 +250,7 @@ final data = ref.watch(provider).value;
 - `docs/ia.md`: 정보 아키텍처
 - `docs/click-architecture.md`: UX 플로우
 
-## 🎯 **현재 진행 상황 (2024-09-15)**
+## 🎯 **현재 진행 상황 (2025-09-16)**
 - ✅ 디자인 시스템 구축 완료
 - ✅ Mock 데이터 Provider 구현
 - ✅ 기본 화면 구조 완성
@@ -276,6 +266,7 @@ final data = ref.watch(provider).value;
 - ✅ **Async Context 안전성 개선** (mounted 체크)
 - ✅ **Task 관리 문서 작성** (project-tasks.md)
 - ✅ **다른 컴퓨터 작업 가이드 추가** (개발 환경 설정, 문제 해결)
+- ✅ **룰 문서 최적화** (핵심 내용만 정리, 문서 크기 최적화)
 - ⏳ Supabase 연동 예정
 - ⏳ 실제 데이터 연동 예정
 
