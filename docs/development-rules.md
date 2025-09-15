@@ -224,6 +224,7 @@ final mockUserProfileProvider = StateNotifierProvider<MockUserProfileNotifier, M
 - `docs/development-rules.md` - 개발 룰
 - `docs/temporary-removals.md` - 임시 제거 기능
 - `docs/design-system.md` - 디자인 시스템
+- `docs/project-tasks.md` - 프로젝트 Task 관리
 - `.cursorrules` - Cursor AI 룰
 - `README.md` - 프로젝트 README
 

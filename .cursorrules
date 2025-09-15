@@ -223,6 +223,7 @@ final data = ref.watch(provider).value;
 - `docs/development-rules.md` - 개발 룰
 - `docs/temporary-removals.md` - 임시 제거 기능
 - `docs/design-system.md` - 디자인 시스템
+- `docs/project-tasks.md` - 프로젝트 Task 관리
 - `.cursorrules` - Cursor AI 룰
 - `README.md` - 프로젝트 README
 
@@ -255,6 +256,7 @@ final data = ref.watch(provider).value;
 - `docs/development-rules.md`: 개발 룰 & 가이드라인
 - `docs/development-rules-history.md`: 룰 히스토리 & 현황
 - `docs/temporary-removals.md`: 임시 제거된 기능들 목록
+- `docs/project-tasks.md`: 프로젝트 Task 관리
 - `docs/ia.md`: 정보 아키텍처
 - `docs/click-architecture.md`: UX 플로우
 
@@ -272,6 +274,7 @@ final data = ref.watch(provider).value;
 - ✅ **AppTextStyle 충돌 해결** (enum vs class)
 - ✅ **Deprecated API 업데이트** (withOpacity, printTime)
 - ✅ **Async Context 안전성 개선** (mounted 체크)
+- ✅ **Task 관리 문서 작성** (project-tasks.md)
 - ⏳ Supabase 연동 예정
 - ⏳ 실제 데이터 연동 예정
 
