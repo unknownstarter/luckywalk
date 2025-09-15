@@ -162,6 +162,9 @@ class MockAuthNotifier extends StateNotifier<MockAuthState> {
   }
 
   Future<void> _restoreMockSession() async {
+    // Mock: 스플래시 화면을 보여주기 위해 2초 대기
+    await Future.delayed(const Duration(seconds: 2));
+    
     // Mock: 50% 확률로 기존 세션 복원
     final hasExistingSession = DateTime.now().millisecond % 2 == 0;
     

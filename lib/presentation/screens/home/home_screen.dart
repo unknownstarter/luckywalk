@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../providers/mock_data_providers.dart';
+import '../../shared/index.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -19,15 +20,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final userProfile = homeData['userProfile'] as MockUserProfile;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.backgroundLight,
       appBar: AppBar(
-        title: const Text('LuckyWalk'),
-        backgroundColor: const Color(0xFF1E3A8A),
-        foregroundColor: Colors.white,
+        title: const AppText('LuckyWalk', style: AppTextStyle.title),
+        backgroundColor: AppColors.primaryBlue,
+        foregroundColor: AppColors.textInverse,
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 16),
-            child: const Icon(Icons.emoji_events, color: Colors.white),
+            child: const Icon(Icons.emoji_events, color: AppColors.textInverse),
           ),
         ],
       ),
@@ -65,20 +66,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildRoundInfo(MockRound currentRound) {
-    return Container(
-      width: double.infinity,
+    return AppCard(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
+      backgroundColor: AppColors.surfaceLight,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -86,87 +76,48 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             children: [
               const Icon(
                 Icons.account_balance_wallet,
-                color: Color(0xFF1E3A8A),
+                color: AppColors.primaryBlue,
                 size: 24,
               ),
               const SizedBox(width: 8),
-              const Text(
+              const AppText(
                 '진행 중인 로또6/45',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                style: AppTextStyle.subtitle,
               ),
               const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1E3A8A),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  '3일 남음',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              const Text(
-                '진행 중인 로또6/45',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1E3A8A),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  '3일 남음',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+              const AppBadge(
+                text: '3일 남음',
+                backgroundColor: AppColors.warningOrange,
               ),
             ],
           ),
           const SizedBox(height: 4),
-          Text(
+          AppText(
             '${currentRound.roundNumber}회차',
-            style: const TextStyle(fontSize: 18, color: Colors.grey),
+            style: AppTextStyle.title,
+            color: AppColors.textSecondary,
           ),
           const SizedBox(height: 8),
-          const Text(
+          const AppText(
             '이번주 총 당첨금',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+            style: AppTextStyle.subtitle,
+            color: AppColors.textSecondary,
           ),
           const SizedBox(height: 4),
-          Text(
+          AppText(
             '${currentRound.totalPrize.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원',
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1E3A8A),
-            ),
+            style: AppTextStyle.headline2,
+            color: AppColors.primaryBlue,
           ),
           const SizedBox(height: 8),
           Row(
             children: [
-              const Icon(Icons.access_time, size: 16, color: Colors.grey),
+              const Icon(Icons.access_time, size: 16, color: AppColors.textSecondary),
               const SizedBox(width: 4),
-              const Text(
+              const AppText(
                 '2025.09.29 오후 9시 발표 예정',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                style: AppTextStyle.body,
+                color: AppColors.textSecondary,
               ),
             ],
           ),
@@ -178,13 +129,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 const SnackBar(content: Text('어떻게 하는지 궁금해요 페이지로 이동')),
               );
             },
-            child: const Text(
+            child: const AppText(
               '어떻게 하는지 궁금해요 >',
-              style: TextStyle(
-                fontSize: 14,
-                color: Color(0xFF1E3A8A),
-                decoration: TextDecoration.underline,
-              ),
+              style: AppTextStyle.body,
+              color: AppColors.primaryBlue,
             ),
           ),
         ],

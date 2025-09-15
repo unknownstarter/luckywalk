@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+// import 'package:firebase_core/firebase_core.dart'; // 현재 Mock 사용으로 주석 처리
+// import 'package:google_mobile_ads/google_mobile_ads.dart'; // 현재 Mock 사용으로 주석 처리
 
 import 'core/env/env.dart';
 import 'core/logging/logger.dart';
@@ -12,14 +12,14 @@ import 'presentation/theme/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
-  await Firebase.initializeApp();
+  // Initialize Firebase (현재 Mock 사용으로 주석 처리)
+  // await Firebase.initializeApp();
 
   // Initialize Supabase
   await Supabase.initialize(url: Env.supabaseUrl, anonKey: Env.supabaseAnonKey);
 
-  // Initialize Google Mobile Ads
-  await MobileAds.instance.initialize();
+  // Initialize Google Mobile Ads (현재 Mock 사용으로 주석 처리)
+  // await MobileAds.instance.initialize();
 
   // Initialize Logger
   AppLogger.init();

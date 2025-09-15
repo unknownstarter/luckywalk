@@ -55,60 +55,40 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1E3A8A),
-      body: Center(
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // 앱 로고
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.directions_walk,
-                  size: 60,
-                  color: Color(0xFF1E3A8A),
-                ),
-              ),
-              const SizedBox(height: 24),
-              
-              // 앱 이름
-              const Text(
-                'LuckyWalk',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 8),
-              
-              // 앱 설명
-              const Text(
-                '걸어서 받는 무료 복권',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white70,
-                ),
-              ),
-              const SizedBox(height: 48),
-              
-              // 로딩 상태 표시
-              _buildLoadingState(authState),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF8DCAFF), // 라이트 블루
+              Color(0xFF0089FF), // 다크 블루
             ],
+          ),
+        ),
+        child: Center(
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // 앱 이름
+                const Text(
+                  'LuckyWalk',
+                  style: TextStyle(
+                    fontFamily: 'Baloo',
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 48),
+                
+                // 로딩 상태 표시
+                _buildLoadingState(authState),
+              ],
+            ),
           ),
         ),
       ),

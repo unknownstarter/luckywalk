@@ -1,0 +1,242 @@
+# LuckyWalk Cursor AI 룰
+
+## 🎯 **프로젝트 개요**
+Flutter + Supabase 기반의 복권 앱 "LuckyWalk"입니다. 사용자가 걸음수나 광고 시청으로 복권을 받고, 실제 로또 번호와 매칭하여 당첨금을 받는 앱입니다.
+
+## 🏗️ **아키텍처**
+- **Frontend**: Flutter (Dart)
+- **Backend**: Supabase (PostgreSQL + Edge Functions)
+- **State Management**: Riverpod
+- **Routing**: GoRouter
+- **현재 상태**: Mock 데이터로 UI/UX 개발 중
+
+## 📁 **디렉토리 구조**
+```
+lib/
+├── core/                    # 핵심 로직 (env, logging, supabase)
+├── providers/              # Riverpod Providers (mock_*, supabase_*)
+├── presentation/           # UI 레이어
+│   ├── shared/             # 공통 컴포넌트 (디자인 시스템)
+│   ├── screens/            # 화면별 위젯
+│   ├── widgets/            # 화면별 위젯
+│   ├── routes/             # 라우팅
+│   └── theme/              # 테마 설정
+└── main.dart
+```
+
+## 🎨 **디자인 시스템 (필수 준수)**
+
+### 폰트 시스템
+```dart
+// ✅ 폰트 패밀리 규칙
+// Baloo: 로고 및 브랜드 텍스트 전용
+// Pretendard: 기본 UI 텍스트 (한국어 최적화)
+
+// ✅ AppTextStyle 사용
+Text('LuckyWalk', style: AppTextStyle.logoMain)  // Baloo Bold 36
+Text('매일 걸으면서 받는 공짜 복권', style: AppTextStyle.slogan)  // Pretendard Medium 20
+Text('1,500,000원', style: AppTextStyle.largeAmount)  // Pretendard ExtraBold 50
+
+// ❌ 하드코딩 금지
+Text('제목', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))
+```
+
+### 색상 사용
+```dart
+// ✅ 항상 AppColors 사용
+backgroundColor: AppColors.primaryBlue
+color: AppColors.textPrimary
+
+// ✅ 그라데이션 배경 (스플래시/로그인)
+decoration: BoxDecoration(
+  gradient: LinearGradient(
+    colors: [Color(0xFF8DCAFF), Color(0xFF0089FF)],
+  ),
+)
+
+// ❌ 하드코딩 금지
+backgroundColor: Color(0xFF1E3A8A)
+color: Colors.black
+```
+
+### 컴포넌트 사용
+```dart
+// ✅ 디자인 시스템 컴포넌트 사용
+AppText('제목', style: AppTextStyle.title)
+PrimaryButton(text: '확인', onPressed: () {})
+AppCard(child: Widget)
+AppBadge(text: '상태', backgroundColor: AppColors.warningOrange)
+
+// ❌ 기본 위젯 직접 사용 금지
+Text('제목', style: TextStyle(...))
+ElevatedButton(onPressed: () {}, child: Text('확인'))
+Container(decoration: BoxDecoration(...))
+```
+
+### 텍스트 스타일
+- `AppTextStyle.headline1` (32px, Bold) - 메인 제목
+- `AppTextStyle.headline2` (24px, Bold) - 섹션 제목
+- `AppTextStyle.headline3` (20px, SemiBold) - 카드 제목
+- `AppTextStyle.title` (18px, SemiBold) - 카드 제목
+- `AppTextStyle.subtitle` (16px, Medium) - 부제목
+- `AppTextStyle.body` (14px, Regular) - 본문
+- `AppTextStyle.caption` (12px, Regular) - 설명 텍스트
+- `AppTextStyle.button` (16px, SemiBold) - 버튼 텍스트
+
+## 🔧 **코딩 스타일**
+
+### Import 순서
+```dart
+// 1. Flutter/Dart 기본
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// 2. 외부 패키지
+import 'package:go_router/go_router.dart';
+
+// 3. 내부 모듈 (상대 경로)
+import '../../../providers/mock_data_providers.dart';
+import '../../shared/index.dart';
+```
+
+### 위젯 구조
+```dart
+class FeatureScreen extends ConsumerStatefulWidget {
+  const FeatureScreen({super.key});
+
+  @override
+  ConsumerState<FeatureScreen> createState() => _FeatureScreenState();
+}
+
+class _FeatureScreenState extends ConsumerState<FeatureScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.backgroundLight,
+      appBar: AppBar(
+        title: const AppText('제목', style: AppTextStyle.title),
+        backgroundColor: AppColors.primaryBlue,
+        foregroundColor: AppColors.textInverse,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            // 구현
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Private 메서드들
+  Widget _buildSection() {
+    return AppCard(
+      child: Column(
+        children: [
+          // 구현
+        ],
+      ),
+    );
+  }
+}
+```
+
+## 🚀 **Provider 사용**
+
+### Mock Provider (현재 사용 중)
+```dart
+// 데이터 조회
+final homeData = ref.watch(mockHomeDataProvider);
+final currentRound = homeData['currentRound'] as MockRound;
+
+// 액션 실행
+ref.read(mockUserProfileProvider.notifier).updateAttendance();
+```
+
+### AsyncValue 처리
+```dart
+// ✅ 좋은 예
+final data = ref.watch(provider);
+return data.when(
+  data: (data) => Widget(data),
+  loading: () => CircularProgressIndicator(),
+  error: (error, stack) => Text('Error: $error'),
+);
+
+// ❌ 나쁜 예
+final data = ref.watch(provider).value;
+```
+
+## 🎯 **핵심 기능**
+
+### 1. 인증 시스템
+- Mock 인증 (현재)
+- Apple/Kakao 로그인 (예정)
+- 세션 관리 (30일)
+
+### 2. 보상 시스템
+- 걸음수 기반 보상 (1k~10k 걸음)
+- 광고 시청 보상 (순차 해금)
+- 출석체크 보상 (일일 1회)
+
+### 3. 복권 시스템
+- 응모 (100장 단위)
+- 결과 확인 (토요일 20:50 발표)
+- 당첨금 지급 (일요일 12:00)
+
+## 🔒 **보안 고려사항**
+- KYC 데이터 암호화
+- 어뷰징 방지
+- 세션 보안
+- 입력 검증
+
+## 📱 **플랫폼별 고려사항**
+- iOS: Safe Area, 네비게이션 바
+- Android: Material Design, 뒤로가기 버튼
+
+## 🧪 **테스트 전략**
+- 단위 테스트: Provider, 모델, 유틸리티
+- 위젯 테스트: 컴포넌트, 상호작용
+- 통합 테스트: 전체 플로우
+
+## 🚨 **중요 알림**
+
+### 필수 준수 사항
+1. **모든 UI는 디자인 시스템 컴포넌트 사용**
+2. **하드코딩된 색상/스타일 금지**
+3. **일관된 네이밍 컨벤션**
+4. **에러 처리 및 로깅 필수**
+5. **성능 최적화 고려**
+
+### 금지 사항
+- 하드코딩된 색상값 사용
+- 기본 Flutter 위젯 직접 사용 (디자인 시스템 우회)
+- 에러 처리 없는 API 호출
+- 불필요한 setState 호출
+- 중복 코드 작성
+
+## 📚 **참고 문서**
+- `docs/design-system.md`: 디자인 시스템 가이드
+- `docs/development-rules.md`: 개발 룰 & 가이드라인
+- `docs/development-rules-history.md`: 룰 히스토리 & 현황
+- `docs/temporary-removals.md`: 임시 제거된 기능들 목록
+- `docs/ia.md`: 정보 아키텍처
+- `docs/click-architecture.md`: UX 플로우
+
+## 🎯 **현재 진행 상황 (2024-09-15)**
+- ✅ 디자인 시스템 구축 완료
+- ✅ Mock 데이터 Provider 구현
+- ✅ 기본 화면 구조 완성
+- ✅ 홈 화면 리팩토링 완료
+- ✅ Firebase/Google Mobile Ads 임시 제거 (크래시 해결)
+- ✅ iOS 빌드 성공
+- ✅ **폰트 시스템 구축** (Baloo + Pretendard)
+- ✅ **스플래시/로그인 화면 완성** (그라데이션 + 폰트)
+- ✅ **Assets 구조 설정** (이미지, 폰트)
+- ⏳ Supabase 연동 예정
+- ⏳ 실제 데이터 연동 예정
+
+---
+
+**이 룰들을 따라 일관되고 유지보수 가능한 코드를 작성해주세요!**

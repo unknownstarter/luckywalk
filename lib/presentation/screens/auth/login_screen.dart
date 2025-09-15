@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../providers/mock_auth_provider.dart';
 import '../../../core/logging/logger.dart';
+import '../../shared/index.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -18,11 +20,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     // 로딩 상태 처리
     if (authState.isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     // 에러 상태 처리
@@ -44,169 +42,128 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       });
     }
     return Scaffold(
-      backgroundColor: const Color(0xFF1E3A8A),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Spacer(),
-              
-              // 앱 로고
-              Center(
-                child: Container(
-                  width: 100,
-                  height: 100,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF8DCAFF), // 라이트 블루
+              Color(0xFF0089FF), // 다크 블루
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Spacer(),
+
+                // 상단 슬로건
+                const Text(
+                  '매일 걸으면서 받는 공짜 복권',
+                  textAlign: TextAlign.center,
+                  style: AppTextStyle.slogan,
+                ),
+                const SizedBox(height: 16),
+
+                // 앱 이름 (Baloo 폰트)
+                const Text(
+                  'LuckyWalk',
+                  textAlign: TextAlign.center,
+                  style: AppTextStyle.logoMain,
+                ),
+                const SizedBox(height: 16),
+
+                // 로또6/45 정보 뱃지
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Icon(
-                    Icons.directions_walk,
-                    size: 50,
-                    color: Color(0xFF1E3A8A),
+                  child: const Text(
+                    '로또6/45 숫자 기반 당첨',
+                    textAlign: TextAlign.center,
+                    style: AppTextStyle.subText,
                   ),
                 ),
-              ),
-              const SizedBox(height: 32),
-              
-              // 앱 이름
-              const Text(
-                'LuckyWalk',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                const SizedBox(height: 48),
+
+                // 왕관 이미지
+                SvgPicture.asset(
+                  'assets/images/crown.svg',
+                  width: 100,
+                  height: 100,
                 ),
-              ),
-              const SizedBox(height: 16),
-              
-              // 앱 설명
-              const Text(
-                '매일 걸으면서 받는 공짜 복권',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white70,
+                const SizedBox(height: 24),
+
+                // 보너스 당첨금 안내
+                const Text(
+                  '매주 보너스 당첨금',
+                  textAlign: TextAlign.center,
+                  style: AppTextStyle.sectionTitle,
                 ),
-              ),
-              const SizedBox(height: 8),
-              
-              const Text(
-                'LuckyWalk',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white70,
+                const SizedBox(height: 8),
+                const Text(
+                  '1,500,000원',
+                  textAlign: TextAlign.center,
+                  style: AppTextStyle.largeAmount,
                 ),
-              ),
-              const SizedBox(height: 16),
-              
-              // 로또6/45 정보
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Text(
-                  '로또6/45 숫자 기반 당첨',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
+                const SizedBox(height: 64),
+
+                // Apple 로그인 버튼
+                ElevatedButton.icon(
+                  onPressed: authState.isLoading
+                      ? null
+                      : () => _handleAppleLogin(context),
+                  icon: const Icon(Icons.apple, color: Colors.white),
+                  label: const Text(
+                    'Apple로 로그인',
+                    style: AppTextStyle.buttonText,
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 32),
-              
-              // 왕관 아이콘
-              const Icon(
-                Icons.emoji_events,
-                size: 80,
-                color: Colors.amber,
-              ),
-              const SizedBox(height: 16),
-              
-              // 보너스 당첨금 안내
-              const Text(
-                '매주 보너스 당첨금',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white70,
-                ),
-              ),
-              const SizedBox(height: 4),
-              const Text(
-                '1,500,000원',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 48),
-              
-              // Apple 로그인 버튼
-              ElevatedButton.icon(
-                onPressed: authState.isLoading ? null : () => _handleAppleLogin(context),
-                icon: const Icon(Icons.apple, color: Colors.white),
-                label: const Text(
-                  'Apple로 로그인',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                const SizedBox(height: 16),
+
+                // Kakao 로그인 버튼
+                ElevatedButton.icon(
+                  onPressed: authState.isLoading
+                      ? null
+                      : () => _handleKakaoLogin(context),
+                  icon: const Icon(Icons.chat, color: Colors.black),
+                  label: const Text('카카오로 로그인', style: AppTextStyle.buttonText),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFEE500),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                const SizedBox(height: 32),
+
+                // 약관 동의
+                const Text(
+                  '회원가입 시 서비스 이용 약관 및 개인정보 수집 및 이용에 동의합니다.',
+                  textAlign: TextAlign.center,
+                  style: AppTextStyle.termsText,
                 ),
-              ),
-              const SizedBox(height: 16),
-              
-              // Kakao 로그인 버튼
-              ElevatedButton.icon(
-                onPressed: authState.isLoading ? null : () => _handleKakaoLogin(context),
-                icon: const Icon(Icons.chat, color: Colors.black),
-                label: const Text(
-                  '카카오로 로그인',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFEE500),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 32),
-              
-              // 약관 동의
-              const Text(
-                '회원가입 시 서비스 이용 약관 및 개인정보 수집 및 이용에 동의합니다.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.white70,
-                ),
-              ),
-              
-              const Spacer(),
-            ],
+
+                const Spacer(),
+              ],
+            ),
           ),
         ),
       ),
@@ -230,5 +187,4 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       AppLogger.error('Kakao Sign In failed: $error');
     }
   }
-
 }
