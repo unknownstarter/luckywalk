@@ -6,6 +6,10 @@ import '../screens/auth/login_screen.dart';
 import '../screens/onboarding/onboarding_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/submit/submit_modal_screen.dart';
+import '../screens/submit/submit_loading_screen.dart';
+import '../screens/submit/submit_confirm_screen.dart';
+import '../screens/submit/submit_edit_screen.dart';
+import '../screens/submit/submit_complete_screen.dart';
 import '../screens/my_tickets/my_tickets_screen.dart';
 import '../screens/results/results_screen.dart';
 import '../screens/settings/settings_screen.dart';
@@ -74,6 +78,49 @@ final routerProvider = Provider<GoRouter>((ref) {
             requireOnboarding: true,
             child: const SubmitModalScreen(),
           ),
+        ),
+        
+        // 응모하기 플로우
+        GoRoute(
+          path: '/submit/loading',
+          name: 'submit-loading',
+          builder: (context, state) {
+            final ticketCount = state.extra as int? ?? 100;
+            return SubmitLoadingScreen(ticketCount: ticketCount);
+          },
+        ),
+        GoRoute(
+          path: '/submit/confirm',
+          name: 'submit-confirm',
+          builder: (context, state) {
+            final extra = state.extra as Map<String, dynamic>? ?? {};
+            final ticketCount = extra['ticketCount'] as int? ?? 100;
+            return SubmitConfirmScreen(ticketCount: ticketCount);
+          },
+        ),
+        GoRoute(
+          path: '/submit/edit',
+          name: 'submit-edit',
+          builder: (context, state) {
+            final extra = state.extra as Map<String, dynamic>? ?? {};
+            final ticketIndex = extra['ticketIndex'] as int? ?? 0;
+            final ticketNumbers = extra['ticketNumbers'] as List<int>? ?? [];
+            final ticketCount = extra['ticketCount'] as int? ?? 100;
+            return SubmitEditScreen(
+              ticketIndex: ticketIndex,
+              ticketNumbers: ticketNumbers,
+              ticketCount: ticketCount,
+            );
+          },
+        ),
+        GoRoute(
+          path: '/submit/complete',
+          name: 'submit-complete',
+          builder: (context, state) {
+            final extra = state.extra as Map<String, dynamic>? ?? {};
+            final ticketCount = extra['ticketCount'] as int? ?? 100;
+            return SubmitCompleteScreen(ticketCount: ticketCount);
+          },
         ),
         
         // 내 응모

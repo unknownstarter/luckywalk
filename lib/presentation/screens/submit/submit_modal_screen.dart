@@ -40,10 +40,31 @@ class _SubmitModalScreenState extends State<SubmitModalScreen> {
   }
 
   void _submitTickets() {
+    // 응모 정책 확인
+    if (!SubmitPolicy.canSubmit()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('응모 마감 시간이 지났습니다. 다음 회차를 기다려주세요.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    
+    // 응모 수량 유효성 검증
+    if (!SubmitPolicy.isValidTicketCount(_ticketCount)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('응모 수량이 올바르지 않습니다.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    
     context.pop();
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('$_ticketCount장 응모가 완료되었습니다!')));
+    // 새로운 응모 플로우로 이동
+    context.go('/submit/loading', extra: _ticketCount);
   }
 }
 
@@ -80,7 +101,7 @@ class _SubmitModalContentState extends State<SubmitModalContent> {
 
         // 규칙 안내
         AppText(
-          '*한번에 100장까지 응모 할 수 있어요',
+          '*100장~10,000장까지 100장 단위로 응모 가능해요',
           style: AppTextStyle.caption,
           color: AppColors.textSecondary,
         ),
@@ -290,7 +311,7 @@ class _SubmitModalContentState extends State<SubmitModalContent> {
   void _decreaseCount() {
     if (_ticketCount > _minTickets) {
       setState(() {
-        _ticketCount = (_ticketCount - 100).clamp(_minTickets, _maxTickets);
+        _ticketCount = SubmitPolicy.normalizeTicketCount(_ticketCount - 100);
         widget.onTicketCountChanged(_ticketCount);
       });
     }
@@ -299,7 +320,7 @@ class _SubmitModalContentState extends State<SubmitModalContent> {
   void _increaseCount() {
     if (_ticketCount < _maxTickets) {
       setState(() {
-        _ticketCount = (_ticketCount + 100).clamp(_minTickets, _maxTickets);
+        _ticketCount = SubmitPolicy.normalizeTicketCount(_ticketCount + 100);
         widget.onTicketCountChanged(_ticketCount);
       });
     }
