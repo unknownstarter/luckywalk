@@ -93,6 +93,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF2F4F6),
+      appBar: AppBar(
+        title: const AppText('LuckyWalk', style: AppTextStyle.logoMain),
+        backgroundColor: AppColors.primaryBlue,
+        foregroundColor: AppColors.textInverse,
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.star),
+            onPressed: () => context.go('/hall-of-fame'),
+            tooltip: '별들의 전당',
+          ),
+        ],
+      ),
       body: Column(
         children: [
           // 상단 블루 배경 영역
@@ -139,22 +152,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           children: [
             // 상태바
             const SizedBox(height: 44),
-
-            // 앱 이름
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  AppText(
-                    'LuckyWalk',
-                    style: AppTextStyle.logoMain,
-                    color: Colors.white,
-                  ),
-                  const Spacer(),
-                  const Icon(Icons.emoji_events, color: Colors.white, size: 24),
-                ],
-              ),
-            ),
 
             const SizedBox(height: 16),
 

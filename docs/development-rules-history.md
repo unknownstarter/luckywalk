@@ -1,8 +1,8 @@
 # LuckyWalk 개발 룰 히스토리 & 현황
 
 **최초 생성**: 2024-09-15 14:30:00 KST  
-**마지막 업데이트**: 2025-01-17 02:30:00 KST  
-**현재 버전**: v2.4.0
+**마지막 업데이트**: 2025-01-17 03:00:00 KST  
+**현재 버전**: v2.5.0
 
 ---
 
@@ -36,6 +36,21 @@
 - ✅ **성능 최적화**: 인덱스, 뷰, 함수, 트리거 최적화
 
 ### **v2.4.0 (2025-01-17 02:30:00 KST) - Mock 코드 완전 제거 & 실제 Supabase API 구현**
+
+### **v2.5.0 (2025-01-17 03:00:00 KST) - Figma hg5gntf0 채널 화면 구현 & 네비게이션 수정**
+
+#### 🎨 **Figma hg5gntf0 채널 화면 구현 (신규)**
+- ✅ **내 응모 화면**: MyEntriesScreen 구현 (응모 히스토리, 복권 번호 표시, 당첨 상태)
+- ✅ **응모결과 화면**: ResultsScreen 구현 (당첨 번호, 내 당첨 결과, 전체 당첨 결과)
+- ✅ **별들의 전당 화면**: HallOfFameScreen 구현 (당첨자 목록, 코멘트, 등수별 표시)
+- ✅ **라우팅 추가**: /my-entries, /results, /hall-of-fame 라우트 추가
+- ✅ **AppColors 확장**: 복권 번호 색상 추가 (lotteryRed, lotteryBlue, lotteryGreen, lotteryOrange, lotteryPurple, lotteryYellow)
+
+#### 🧭 **네비게이션 수정 (신규)**
+- ✅ **하단 네비게이션 수정**: 별들의 전당을 하단 네비게이션에서 제거 (피그마 디자인에 맞게)
+- ✅ **홈 화면 AppBar 추가**: LuckyWalk 타이틀과 별들의 전당 아이콘 추가
+- ✅ **별들의 전당 진입점**: 홈 화면 우측 상단 아이콘, 응모결과 화면 하단 버튼
+- ✅ **코드 품질 개선**: 중복 import 제거, 불필요한 중괄호 제거, Flutter analyze 0개 이슈
 
 #### 🧹 **Mock 코드 완전 제거 (신규)**
 - ✅ **Mock Provider 제거**: mock_data_providers.dart, mock_auth_provider.dart 완전 삭제

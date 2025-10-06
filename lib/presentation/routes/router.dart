@@ -25,6 +25,8 @@ import '../screens/not_found/not_found_screen.dart';
 import '../widgets/main_shell.dart';
 import '../../providers/supabase_auth_provider.dart';
 import '../screens/test/supabase_api_test_screen.dart';
+import '../screens/my_entries/my_entries_screen.dart';
+import '../screens/hall_of_fame/hall_of_fame_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -191,6 +193,27 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/test/supabase',
         name: 'supabase-test',
         builder: (context, state) => const SupabaseApiTestScreen(),
+      ),
+      
+      // 내 응모 화면
+      GoRoute(
+        path: '/my-entries',
+        name: 'my-entries',
+        builder: (context, state) => const MyEntriesScreen(),
+      ),
+      
+      // 응모결과 화면
+      GoRoute(
+        path: '/results',
+        name: 'results',
+        builder: (context, state) => const ResultsScreen(),
+      ),
+      
+      // 별들의 전당 화면
+      GoRoute(
+        path: '/hall-of-fame',
+        name: 'hall-of-fame',
+        builder: (context, state) => const HallOfFameScreen(),
       ),
 
       // 응모 결과 상세

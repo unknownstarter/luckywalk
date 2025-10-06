@@ -41,4 +41,12 @@ class AppColors {
   static const Color shadowLight = Color(0x1A000000);
   static const Color shadowMedium = Color(0x33000000);
   static const Color shadowDark = Color(0x4D000000);
+
+  // Lottery Colors
+  static const Color lotteryRed = Color(0xFFFFB157);
+  static const Color lotteryBlue = Color(0xFF5DB4FF);
+  static const Color lotteryGreen = Color(0xFF59FF57);
+  static const Color lotteryOrange = Color(0xFFFF7D7D);
+  static const Color lotteryPurple = Color(0xFF8E7AF3);
+  static const Color lotteryYellow = Color(0xFFFFD700);
 }
