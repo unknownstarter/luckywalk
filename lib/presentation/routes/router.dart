@@ -194,34 +194,35 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'supabase-test',
         builder: (context, state) => const SupabaseApiTestScreen(),
       ),
-      
+
       // 내 응모 화면
       GoRoute(
         path: '/my-entries',
         name: 'my-entries',
         builder: (context, state) => const MyEntriesScreen(),
       ),
-      
+
       // 응모결과 화면
       GoRoute(
         path: '/results',
         name: 'results',
         builder: (context, state) => const ResultsScreen(),
       ),
-      
+
       // 별들의 전당 화면
       GoRoute(
         path: '/hall-of-fame',
         name: 'hall-of-fame',
         builder: (context, state) => const HallOfFameScreen(),
       ),
-      
+
       // 설정 화면
       GoRoute(
         path: '/settings',
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
       ),
+
 
       // 응모 결과 상세
       GoRoute(

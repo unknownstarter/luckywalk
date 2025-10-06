@@ -219,7 +219,7 @@ class HomeDataNotifier extends StateNotifier<HomeDataState> {
       'draw_date': DateTime.now()
           .add(const Duration(days: 7))
           .toIso8601String(),
-      'total_prize': 1500000,
+      'total_prize': 1500000, // 1등+2등 현금 총액
       'status': 'scheduled',
       'winning_numbers': null,
       'announcement_date': DateTime.now()

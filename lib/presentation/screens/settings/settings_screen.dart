@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../providers/supabase_auth_provider.dart';
 import '../../shared/index.dart';
 
@@ -38,10 +37,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             // 계정 관리 섹션
             _buildSection(
               title: '계정 관리',
-              children: [
-                _buildProfileCard(authState),
-                _buildLogoutButton(),
-              ],
+              children: [_buildProfileCard(authState), _buildLogoutButton()],
             ),
             const SizedBox(height: 24),
 
@@ -53,19 +49,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   title: '푸시 알림',
                   subtitle: '앱 알림을 받습니다',
                   value: _pushNotifications,
-                  onChanged: (value) => setState(() => _pushNotifications = value),
+                  onChanged: (value) =>
+                      setState(() => _pushNotifications = value),
                 ),
                 _buildSwitchTile(
                   title: '당첨 결과 알림',
                   subtitle: '당첨 결과를 즉시 알려드립니다',
                   value: _winningNotifications,
-                  onChanged: (value) => setState(() => _winningNotifications = value),
+                  onChanged: (value) =>
+                      setState(() => _winningNotifications = value),
                 ),
                 _buildSwitchTile(
                   title: '마케팅 알림',
                   subtitle: '이벤트 및 프로모션 정보를 받습니다',
                   value: _marketingNotifications,
-                  onChanged: (value) => setState(() => _marketingNotifications = value),
+                  onChanged: (value) =>
+                      setState(() => _marketingNotifications = value),
                 ),
               ],
             ),
@@ -89,7 +88,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   title: '진동',
                   subtitle: '터치 시 진동을 활성화합니다',
                   value: _vibrationEnabled,
-                  onChanged: (value) => setState(() => _vibrationEnabled = value),
+                  onChanged: (value) =>
+                      setState(() => _vibrationEnabled = value),
                 ),
               ],
             ),
@@ -99,11 +99,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             _buildSection(
               title: '정보',
               children: [
-                _buildListTile(
-                  title: '앱 버전',
-                  subtitle: '1.0.0',
-                  onTap: null,
-                ),
+                _buildListTile(title: '앱 버전', subtitle: '1.0.0', onTap: null),
                 _buildListTile(
                   title: '이용약관',
                   subtitle: '서비스 이용약관을 확인하세요',
@@ -165,10 +161,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AppText(
-          title,
-          style: AppTextStyle.title,
-        ),
+        AppText(title, style: AppTextStyle.title),
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
@@ -176,9 +169,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: AppColors.borderLight),
           ),
-          child: Column(
-            children: children,
-          ),
+          child: Column(children: children),
         ),
       ],
     );
@@ -190,46 +181,50 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       child: authState.isLoading
           ? const CircularProgressIndicator()
           : authState.error != null
-              ? AppText(
-                  '프로필 로드 실패',
-                  style: AppTextStyle.body,
-                  color: AppColors.errorRed,
-                )
-              : Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundColor: AppColors.primaryBlue,
-                      child: AppText(
-                        authState.user?.userMetadata?['display_name']?.toString().substring(0, 1).toUpperCase() ?? 'U',
-                        style: AppTextStyle.title,
-                        color: AppColors.textInverse,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AppText(
-                            authState.user?.userMetadata?['display_name'] ?? '사용자',
-                            style: AppTextStyle.subtitle,
-                          ),
-                          const SizedBox(height: 4),
-                          AppText(
-                            authState.user?.email ?? '이메일 없음',
-                            style: AppTextStyle.caption,
-                            color: AppColors.textSecondary,
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.edit, color: AppColors.primaryBlue),
-                      onPressed: () => _showEditProfileDialog(),
-                    ),
-                  ],
+          ? AppText(
+              '프로필 로드 실패',
+              style: AppTextStyle.body,
+              color: AppColors.errorRed,
+            )
+          : Row(
+              children: [
+                CircleAvatar(
+                  radius: 24,
+                  backgroundColor: AppColors.primaryBlue,
+                  child: AppText(
+                    authState.user?.userMetadata?['display_name']
+                            ?.toString()
+                            .substring(0, 1)
+                            .toUpperCase() ??
+                        'U',
+                    style: AppTextStyle.title,
+                    color: AppColors.textInverse,
+                  ),
                 ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppText(
+                        authState.user?.userMetadata?['display_name'] ?? '사용자',
+                        style: AppTextStyle.subtitle,
+                      ),
+                      const SizedBox(height: 4),
+                      AppText(
+                        authState.user?.email ?? '이메일 없음',
+                        style: AppTextStyle.caption,
+                        color: AppColors.textSecondary,
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.edit, color: AppColors.primaryBlue),
+                  onPressed: () => _showEditProfileDialog(),
+                ),
+              ],
+            ),
     );
   }
 
@@ -263,8 +258,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }) {
     return ListTile(
       title: AppText(title, style: AppTextStyle.subtitle),
-      subtitle: AppText(subtitle, style: AppTextStyle.caption, color: AppColors.textSecondary),
-      trailing: onTap != null ? const Icon(Icons.arrow_forward_ios, size: 16) : null,
+      subtitle: AppText(
+        subtitle,
+        style: AppTextStyle.caption,
+        color: AppColors.textSecondary,
+      ),
+      trailing: onTap != null
+          ? const Icon(Icons.arrow_forward_ios, size: 16)
+          : null,
       onTap: onTap,
     );
   }
@@ -277,7 +278,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }) {
     return ListTile(
       title: AppText(title, style: AppTextStyle.subtitle),
-      subtitle: AppText(subtitle, style: AppTextStyle.caption, color: AppColors.textSecondary),
+      subtitle: AppText(
+        subtitle,
+        style: AppTextStyle.caption,
+        color: AppColors.textSecondary,
+      ),
       trailing: Switch(
         value: value,
         onChanged: onChanged,
@@ -292,8 +297,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     required VoidCallback onTap,
   }) {
     return ListTile(
-      title: AppText(title, style: AppTextStyle.subtitle, color: AppColors.errorRed),
-      subtitle: AppText(subtitle, style: AppTextStyle.caption, color: AppColors.textSecondary),
+      title: AppText(
+        title,
+        style: AppTextStyle.subtitle,
+        color: AppColors.errorRed,
+      ),
+      subtitle: AppText(
+        subtitle,
+        style: AppTextStyle.caption,
+        color: AppColors.textSecondary,
+      ),
       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
       onTap: onTap,
     );
@@ -353,7 +366,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const AppText('개인정보처리방침', style: AppTextStyle.title),
-        content: const AppText('개인정보처리방침 내용이 여기에 표시됩니다.', style: AppTextStyle.body),
+        content: const AppText(
+          '개인정보처리방침 내용이 여기에 표시됩니다.',
+          style: AppTextStyle.body,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -369,7 +385,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const AppText('문의하기', style: AppTextStyle.title),
-        content: const AppText('문의사항이 있으시면 support@luckywalk.com으로 연락해주세요.', style: AppTextStyle.body),
+        content: const AppText(
+          '문의사항이 있으시면 support@luckywalk.com으로 연락해주세요.',
+          style: AppTextStyle.body,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -412,7 +431,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               Navigator.pop(context);
               ref.read(supabaseAuthProvider.notifier).signOut();
             },
-            child: const AppText('로그아웃', style: AppTextStyle.subtitle, color: AppColors.errorRed),
+            child: const AppText(
+              '로그아웃',
+              style: AppTextStyle.subtitle,
+              color: AppColors.errorRed,
+            ),
           ),
         ],
       ),
@@ -424,7 +447,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const AppText('계정 삭제', style: AppTextStyle.title),
-        content: const AppText('계정을 삭제하면 모든 데이터가 영구적으로 삭제됩니다. 정말 삭제하시겠습니까?', style: AppTextStyle.body),
+        content: const AppText(
+          '계정을 삭제하면 모든 데이터가 영구적으로 삭제됩니다. 정말 삭제하시겠습니까?',
+          style: AppTextStyle.body,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -436,7 +462,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               // TODO: 계정 삭제 구현
               AppToast.info(context, message: '계정 삭제 기능은 준비 중입니다.');
             },
-            child: const AppText('삭제', style: AppTextStyle.subtitle, color: AppColors.errorRed),
+            child: const AppText(
+              '삭제',
+              style: AppTextStyle.subtitle,
+              color: AppColors.errorRed,
+            ),
           ),
         ],
       ),
