@@ -28,6 +28,9 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        
+        // 카카오 로그인을 위한 네이티브 앱 키 설정
+        manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = "YOUR_KAKAO_NATIVE_APP_KEY"
     }
 
     buildTypes {

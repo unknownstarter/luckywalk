@@ -50,6 +50,12 @@ dependencies:
   # Backend
   supabase_flutter: ^2.10.2
   
+  # Kakao Login
+  kakao_flutter_sdk: ^1.9.4
+  
+  # Apple Login
+  sign_in_with_apple: ^6.1.0
+  
   # Environment Variables
   flutter_dotenv: ^5.1.0
   

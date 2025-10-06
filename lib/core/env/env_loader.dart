@@ -23,9 +23,13 @@ class EnvLoader {
         // Fallback to assets
         await dotenv.load(fileName: 'assets/.env');
         _isLoaded = true;
-        AppLogger.info('Environment variables loaded successfully from assets/.env');
+        AppLogger.info(
+          'Environment variables loaded successfully from assets/.env',
+        );
       } catch (e2) {
-        AppLogger.error('Failed to load .env file from both locations: $e, $e2');
+        AppLogger.error(
+          'Failed to load .env file from both locations: $e, $e2',
+        );
         AppLogger.info('Using default values from env.dart');
       }
     }
@@ -72,6 +76,12 @@ class EnvLoader {
   /// Kakao Native App Key 조회
   static String get kakaoNativeAppKey =>
       get('KAKAO_NATIVE_APP_KEY', defaultValue: 'your-kakao-native-app-key');
+
+  /// Kakao JavaScript App Key 조회
+  static String get kakaoJavaScriptAppKey => get(
+    'KAKAO_JAVASCRIPT_APP_KEY',
+    defaultValue: 'your-kakao-javascript-app-key',
+  );
 
   /// Kakao REST API Key 조회
   static String get kakaoRestApiKey =>

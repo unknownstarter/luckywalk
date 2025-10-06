@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 // import 'package:firebase_core/firebase_core.dart'; // 현재 Mock 사용으로 주석 처리
 // import 'package:google_mobile_ads/google_mobile_ads.dart'; // 현재 Mock 사용으로 주석 처리
 
@@ -18,6 +19,12 @@ void main() async {
   // Load environment variables
   await EnvLoader.load();
 
+  // Initialize Kakao SDK
+  KakaoSdk.init(
+    nativeAppKey: EnvLoader.kakaoNativeAppKey,
+    javaScriptAppKey: EnvLoader.kakaoJavaScriptAppKey,
+  );
+
   // Initialize Firebase (현재 Mock 사용으로 주석 처리)
   // await Firebase.initializeApp();
 
@@ -31,9 +38,7 @@ void main() async {
     realtimeClientOptions: const RealtimeClientOptions(
       logLevel: RealtimeLogLevel.info,
     ),
-    storageOptions: const StorageClientOptions(
-      retryAttempts: 3,
-    ),
+    storageOptions: const StorageClientOptions(retryAttempts: 3),
   );
 
   // Initialize Google Mobile Ads (현재 Mock 사용으로 주석 처리)

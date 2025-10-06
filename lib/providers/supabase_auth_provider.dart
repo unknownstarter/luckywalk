@@ -1,7 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide User;
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase show User;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'dart:async';
 
 import '../../core/logging/logger.dart';
@@ -15,7 +18,7 @@ class SupabaseAuthState {
   final bool hasNetworkConnection;
   final bool isAppVersionSupported;
   final String? error;
-  final User? user;
+  final supabase.User? user;
 
   const SupabaseAuthState({
     this.isLoading = true,
@@ -34,7 +37,7 @@ class SupabaseAuthState {
     bool? hasNetworkConnection,
     bool? isAppVersionSupported,
     String? error,
-    User? user,
+    supabase.User? user,
   }) {
     return SupabaseAuthState(
       isLoading: isLoading ?? this.isLoading,
@@ -197,7 +200,7 @@ class SupabaseAuthNotifier extends StateNotifier<SupabaseAuthState> {
     }
   }
 
-  Future<void> _checkOnboardingStatus(User user) async {
+  Future<void> _checkOnboardingStatus(supabase.User user) async {
     try {
       // 사용자 프로필에서 온보딩 상태 확인
       final response = await Supabase.instance.client
@@ -221,66 +224,84 @@ class SupabaseAuthNotifier extends StateNotifier<SupabaseAuthState> {
     }
   }
 
-  /// Apple 로그인
+  /// Apple 로그인 (네이티브 SDK 사용)
   Future<void> signInWithApple() async {
     try {
       state = state.copyWith(isLoading: true, error: null);
 
-      AppLogger.info('Starting Apple sign in');
+      AppLogger.info('Starting Apple native sign in');
 
-      // 방법 1: OAuth 플로우 (권장)
-      try {
-        await Supabase.instance.client.auth.signInWithOAuth(
-          OAuthProvider.apple,
-          redirectTo: 'io.flutter.luckywalk://login-callback/',
-          authScreenLaunchMode: LaunchMode.externalApplication,
-        );
+      // Apple 로그인 실행 (네이티브 SDK)
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
 
-        // OAuth 성공 시 자동으로 인증 상태가 업데이트됨
-        AppLogger.info('OAuth login successful');
-      } catch (oauthError) {
-        AppLogger.warning('OAuth failed, trying Edge Function: $oauthError');
+      AppLogger.info(
+        'Apple login successful, user: ${credential.userIdentifier}',
+      );
 
-        // 방법 2: Edge Function을 통한 로그인 (대안)
-        await _signInWithEdgeFunction('apple');
+      // Supabase에 Apple 토큰으로 로그인
+      final response = await Supabase.instance.client.auth.signInWithIdToken(
+        provider: OAuthProvider.apple,
+        idToken: credential.identityToken!,
+        nonce: credential.authorizationCode,
+      );
+
+      if (response.user != null) {
+        AppLogger.info('Supabase Apple login successful');
+        await _handleSuccessfulLogin(response.user!);
+      } else {
+        throw Exception('Supabase login failed');
       }
     } catch (e, stackTrace) {
       AppLogger.error('Apple sign in error', e, stackTrace);
       state = state.copyWith(
         isLoading: false,
-        error: 'Apple 로그인 중 오류가 발생했습니다.',
+        error: 'Apple 로그인 중 오류가 발생했습니다: ${e.toString()}',
       );
     }
   }
 
-  /// Kakao 로그인
+  /// Kakao 로그인 (네이티브 SDK 사용)
   Future<void> signInWithKakao() async {
     try {
       state = state.copyWith(isLoading: true, error: null);
 
-      AppLogger.info('Starting Kakao sign in');
+      AppLogger.info('Starting Kakao native sign in');
 
-      // 방법 1: OAuth 플로우 (권장)
-      try {
-        await Supabase.instance.client.auth.signInWithOAuth(
-          OAuthProvider.kakao,
-          redirectTo: 'io.flutter.luckywalk://login-callback/',
-          authScreenLaunchMode: LaunchMode.externalApplication,
-        );
+      // 카카오 로그인 실행 (네이티브 SDK)
+      OAuthToken token;
+      if (await isKakaoTalkInstalled()) {
+        // 카카오톡이 설치된 경우
+        token = await UserApi.instance.loginWithKakaoTalk();
+      } else {
+        // 카카오톡이 설치되지 않은 경우
+        token = await UserApi.instance.loginWithKakaoAccount();
+      }
 
-        // OAuth 성공 시 자동으로 인증 상태가 업데이트됨
-        AppLogger.info('OAuth login successful');
-      } catch (oauthError) {
-        AppLogger.warning('OAuth failed, trying Edge Function: $oauthError');
+      AppLogger.info('Kakao login successful, token: ${token.accessToken}');
 
-        // 방법 2: Edge Function을 통한 로그인 (대안)
-        await _signInWithEdgeFunction('kakao');
+      // Supabase에 카카오 토큰으로 로그인
+      final response = await Supabase.instance.client.auth.signInWithIdToken(
+        provider: OAuthProvider.kakao,
+        idToken: token.accessToken,
+        nonce: 'kakao_nonce_${DateTime.now().millisecondsSinceEpoch}',
+      );
+
+      if (response.user != null) {
+        AppLogger.info('Supabase Kakao login successful');
+        await _handleSuccessfulLogin(response.user!);
+      } else {
+        throw Exception('Supabase login failed');
       }
     } catch (e, stackTrace) {
       AppLogger.error('Kakao sign in error', e, stackTrace);
       state = state.copyWith(
         isLoading: false,
-        error: 'Kakao 로그인 중 오류가 발생했습니다.',
+        error: 'Kakao 로그인 중 오류가 발생했습니다: ${e.toString()}',
       );
     }
   }
@@ -334,51 +355,13 @@ class SupabaseAuthNotifier extends StateNotifier<SupabaseAuthState> {
   }
 
   /// 성공적인 로그인 처리
-  Future<void> _handleSuccessfulLogin(User user) async {
+  Future<void> _handleSuccessfulLogin(supabase.User user) async {
     AppLogger.info('Login successful - userId: ${user.id}');
 
     state = state.copyWith(isLoading: false, isAuthenticated: true, user: user);
 
     // 온보딩 상태 확인
     await _checkOnboardingStatus(user);
-  }
-
-  /// Edge Function을 통한 로그인
-  Future<void> _signInWithEdgeFunction(String provider) async {
-    try {
-      AppLogger.info('Trying Edge Function login for $provider');
-
-      // Edge Function 호출
-      final response = await Supabase.instance.client.functions.invoke(
-        'auth-$provider',
-        body: {
-          'access_token': 'mock_token_${DateTime.now().millisecondsSinceEpoch}',
-          'refresh_token':
-              'mock_refresh_${DateTime.now().millisecondsSinceEpoch}',
-        },
-      );
-
-      if (response.data != null && response.data['user'] != null) {
-        // Edge Function에서 반환된 사용자 정보로 로그인 처리
-        final userData = response.data['user'] as Map<String, dynamic>;
-
-        // Mock User 객체 생성 (실제로는 Supabase에서 제공하는 User 객체 사용)
-        final mockUser = User(
-          id: userData['id'] ?? 'mock_user_id',
-          appMetadata: userData['app_metadata'] ?? {},
-          userMetadata: userData['user_metadata'] ?? {},
-          aud: 'authenticated',
-          createdAt: DateTime.now().toIso8601String(),
-        );
-
-        await _handleSuccessfulLogin(mockUser);
-      } else {
-        throw Exception('Edge Function returned invalid data');
-      }
-    } catch (e) {
-      AppLogger.error('Edge Function login failed: $e');
-      rethrow;
-    }
   }
 
   /// 에러 클리어

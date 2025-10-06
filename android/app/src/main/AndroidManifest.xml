@@ -1,8 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 카카오 로그인을 위한 인터넷 권한 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    
     <application
         android:label="luckywalk"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        
+        <!-- 카카오 네이티브 앱 키 -->
+        <meta-data
+            android:name="com.kakao.sdk.AppKey"
+            android:value="7672ab90054e4f94ca08d0ce5f58f92e" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

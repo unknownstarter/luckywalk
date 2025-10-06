@@ -55,6 +55,18 @@
 				<string>luckywalk</string>
 			</array>
 		</dict>
+		<!-- 카카오 로그인을 위한 URL Scheme -->
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>kakao</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakao7672ab90054e4f94ca08d0ce5f58f92e</string>
+			</array>
+		</dict>
 	</array>
+	<!-- 카카오 로그인을 위한 네이티브 앱 키 -->
+	<key>KAKAO_NATIVE_APP_KEY</key>
+	<string>7672ab90054e4f94ca08d0ce5f58f92e</string>
 </dict>
 </plist>
