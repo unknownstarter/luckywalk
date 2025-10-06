@@ -94,7 +94,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF2F4F6),
       appBar: AppBar(
-        title: const AppText('LuckyWalk', style: AppTextStyle.logoMain),
+        title: Image.asset(
+          'assets/images/App Title.png',
+          height: 19, // 원본 비율에 맞춰 조정
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.high, // 고품질 필터링
+        ),
         backgroundColor: AppColors.primaryBlue,
         foregroundColor: AppColors.textInverse,
         centerTitle: true,

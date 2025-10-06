@@ -8,7 +8,7 @@ Flutter + Supabase 기반의 복권 앱 "LuckyWalk"입니다. 사용자가 걸�
 - **Backend**: Supabase (PostgreSQL + Edge Functions)
 - **State Management**: Riverpod
 - **Routing**: GoRouter
-- **현재 상태**: 핵심 정책 구현 완료, 한국 로또 시간 정책 적용, Mock 코드 완전 제거, 실제 Supabase API 구현 완료, Figma hg5gntf0 채널 화면 구현 완료
+- **현재 상태**: 핵심 정책 구현 완료, 한국 로또 시간 정책 적용, Mock 코드 완전 제거, 실제 Supabase API 구현 완료, Figma hg5gntf0 채널 화면 구현 완료, 이미지 기반 UI 완성
 
 ## 📁 **디렉토리 구조**
 ```
@@ -29,13 +29,15 @@ lib/
 ### 폰트 시스템
 ```dart
 // ✅ 폰트 패밀리 규칙
-// Baloo: 로고 및 브랜드 텍스트 전용
 // Pretendard: 기본 UI 텍스트 (한국어 최적화)
+// 앱 타이틀: App Title.png 이미지 사용 (폰트 문제 해결)
 
 // ✅ AppTextStyle 사용
-Text('LuckyWalk', style: AppTextStyle.logoMain)  // Baloo Bold 36
 Text('매일 걸으면서 받는 공짜 복권', style: AppTextStyle.slogan)  // Pretendard Medium 20
 Text('1,500,000원', style: AppTextStyle.largeAmount)  // Pretendard ExtraBold 50
+
+// ✅ 앱 타이틀 이미지 사용
+Image.asset('assets/images/App Title.png', height: 19, filterQuality: FilterQuality.high)
 
 // ❌ 하드코딩 금지
 Text('제목', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))
@@ -66,6 +68,11 @@ AppText('제목', style: AppTextStyle.title)
 PrimaryButton(text: '확인', onPressed: () {})
 AppCard(child: Widget)
 AppBadge(text: '상태', backgroundColor: AppColors.warningOrange)
+
+// ✅ 이미지 기반 UI 사용
+Image.asset('assets/images/App Title.png', height: 19, filterQuality: FilterQuality.high)
+Image.asset('assets/images/apple_logo.png', width: 24, height: 24)
+Image.asset('assets/images/kakao_logo.png', width: 24, height: 24)
 
 // ❌ 기본 위젯 직접 사용 금지
 Text('제목', style: TextStyle(...))
@@ -209,6 +216,8 @@ final data = ref.watch(provider).value;
 4. **에러 처리 및 로깅 필수**
 5. **성능 최적화 고려**
 6. **📅 날짜/시간 기록 필수** - 모든 히스토리/업데이트 문서에 정확한 날짜/시간 기록
+7. **⏱️ 타임아웃 정책** - 모든 작업은 10초 이내 완료, 초과 시 타임아웃 처리
+8. **🔍 문제 해결 원칙** - 목적 파악 → 원인 분석 → 의존성 검토 → 전반적 로직 분석 → 근본적 해결
 
 ### 📅 날짜/시간 기록 규칙 (필수)
 **모든 히스토리나 업데이트 문서에는 반드시 정확한 날짜와 시간을 기록해야 합니다.**
@@ -240,6 +249,8 @@ final data = ref.watch(provider).value;
 - 불필요한 setState 호출
 - 중복 코드 작성
 - **날짜/시간 없는 히스토리/업데이트 문서 작성**
+- **무작정 코드 변경 (원인 분석 없이)**
+- **의존성 검토 없이 문제 해결 시도**
 
 ## 📚 **참고 문서**
 - `docs/design-system.md`: 디자인 시스템 가이드
@@ -288,6 +299,8 @@ final data = ref.watch(provider).value;
 - ✅ **설정 화면 구현** (계정 관리, 앱 설정, 알림 설정, 정보 관리)
 - ✅ **Apple 로그인 설정** (Apple Developer Console, Supabase Dashboard)
 - ✅ **보안 강화** (인앱 관리자 페이지 제거, 환경 변수 보호)
+- ✅ **문제 해결 원칙 강화** (목적 파악 → 원인 분석 → 의존성 검토 → 전반적 로직 분석 → 근본적 해결)
+- ✅ **이미지 기반 UI 완성** (App Title.png 이미지 적용, Apple/Kakao 로고 통합, 폰트 문제 해결)
 - ⏳ 최종 테스트 및 앱 스토어 배포 준비
 
 ---

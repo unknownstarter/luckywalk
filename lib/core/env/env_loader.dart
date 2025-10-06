@@ -13,12 +13,21 @@ class EnvLoader {
     if (_isLoaded) return;
 
     try {
+      // Try multiple paths for .env file
       await dotenv.load(fileName: '.env');
       _isLoaded = true;
-      AppLogger.info('Environment variables loaded successfully');
+      AppLogger.info('Environment variables loaded successfully from .env');
     } catch (e) {
       AppLogger.warning('Failed to load .env file: $e');
-      AppLogger.info('Using default values from env.dart');
+      try {
+        // Fallback to assets
+        await dotenv.load(fileName: 'assets/.env');
+        _isLoaded = true;
+        AppLogger.info('Environment variables loaded successfully from assets/.env');
+      } catch (e2) {
+        AppLogger.error('Failed to load .env file from both locations: $e, $e2');
+        AppLogger.info('Using default values from env.dart');
+      }
     }
   }
 

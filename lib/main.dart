@@ -12,6 +12,9 @@ import 'presentation/theme/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Logger first
+  AppLogger.init();
+
   // Load environment variables
   await EnvLoader.load();
 
@@ -35,9 +38,6 @@ void main() async {
 
   // Initialize Google Mobile Ads (현재 Mock 사용으로 주석 처리)
   // await MobileAds.instance.initialize();
-
-  // Initialize Logger
-  AppLogger.init();
 
   // Print environment variables (debug mode only)
   if (EnvLoader.debugMode) {

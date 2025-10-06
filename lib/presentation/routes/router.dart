@@ -202,27 +202,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const MyEntriesScreen(),
       ),
 
-      // 응모결과 화면
-      GoRoute(
-        path: '/results',
-        name: 'results',
-        builder: (context, state) => const ResultsScreen(),
-      ),
-
       // 별들의 전당 화면
       GoRoute(
         path: '/hall-of-fame',
         name: 'hall-of-fame',
         builder: (context, state) => const HallOfFameScreen(),
       ),
-
-      // 설정 화면
-      GoRoute(
-        path: '/settings',
-        name: 'settings',
-        builder: (context, state) => const SettingsScreen(),
-      ),
-
 
       // 응모 결과 상세
       GoRoute(
@@ -255,8 +240,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
 
-    // 리다이렉트 로직
+    // 리다이렉트 로직 - 스플래시 화면은 절대 리다이렉트하지 않음
     redirect: (context, state) {
+      // 스플래시 화면은 무조건 표시 (리다이렉트 금지)
+      if (state.uri.path == '/') {
+        return null;
+      }
+
+      // 스플래시가 아닌 다른 화면들에 대해서만 인증 체크
       final authState = ref.read(supabaseAuthProvider);
 
       // 인증되지 않은 사용자
@@ -269,11 +260,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (!authState.isOnboarded) {
         if (state.uri.path == '/onboarding') return null;
         return '/onboarding';
-      }
-
-      // 스플래시에서 홈으로 리다이렉트
-      if (state.uri.path == '/') {
-        return '/home';
       }
 
       return null;

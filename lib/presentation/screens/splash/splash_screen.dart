@@ -22,14 +22,27 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 3), // 3초 애니메이션
       vsync: this,
     );
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
 
-    _animationController.forward();
+    // 즉시 애니메이션 시작 (하얀색 화면 방지)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _animationController.forward();
+    });
+
+    // 강제로 3초 대기 후 네비게이션 (스플래시 화면 확실히 표시)
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted && !_hasNavigated) {
+        AppLogger.info('Splash screen navigation starting...');
+        final authState = ref.read(supabaseAuthProvider);
+        _hasNavigated = true;
+        _navigateBasedOnAuthState(authState);
+      }
+    });
   }
 
   @override
@@ -42,15 +55,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Widget build(BuildContext context) {
     final authState = ref.watch(supabaseAuthProvider);
 
-    // 인증 상태 변화 감지 및 네비게이션
-    ref.listen<SupabaseAuthState>(supabaseAuthProvider, (previous, next) {
-      if (!_hasNavigated && !next.isLoading) {
-        _hasNavigated = true;
-        _navigateBasedOnAuthState(next);
-      }
-    });
-
     return Scaffold(
+      backgroundColor: const Color(0xFF0089FF), // 즉시 표시할 배경색
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -68,16 +74,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // 앱 이름
-                const Text(
-                  'LuckyWalk',
-                  style: TextStyle(
-                    fontFamily: 'Baloo',
-                    fontSize: 60,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.white,
-                    letterSpacing: 0,
-                  ),
+                // 앱 이름 (고해상도 이미지 사용)
+                Image.asset(
+                  'assets/images/App Title.png',
+                  width: 300,
+                  height: 80,
+                  fit: BoxFit.contain,
+                  filterQuality: FilterQuality.high, // 고품질 필터링
                 ),
                 const SizedBox(height: 48),
 
@@ -92,33 +95,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Widget _buildLoadingState(SupabaseAuthState authState) {
-    if (authState.error != null) {
-      return Column(
-        children: [
-          const Icon(Icons.error_outline, color: Colors.red, size: 32),
-          const SizedBox(height: 16),
-          const Text(
-            '오류가 발생했습니다',
-            style: TextStyle(color: Colors.white, fontSize: 16),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            authState.error!,
-            style: const TextStyle(color: Colors.white70, fontSize: 12),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              ref.invalidate(supabaseAuthProvider);
-              _hasNavigated = false;
-            },
-            child: const Text('다시 시도'),
-          ),
-        ],
-      );
-    }
-
+    // 네트워크 연결 체크
     if (!authState.hasNetworkConnection) {
       return Column(
         children: [
@@ -140,6 +117,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       );
     }
 
+    // 앱 버전 체크
     if (!authState.isAppVersionSupported) {
       return Column(
         children: [
@@ -176,14 +154,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     AppLogger.info('Navigating based on auth state: $authState');
 
+    // 간단한 로직: 로그인 여부만 확인
     if (authState.isAuthenticated) {
-      if (authState.isOnboarded) {
-        // 로그인됨 + 온보딩 완료 → 홈으로
-        context.go('/home');
-      } else {
-        // 로그인됨 + 온보딩 미완료 → 온보딩으로
-        context.go('/onboarding');
-      }
+      // 로그인됨 → 홈으로 (온보딩은 홈에서 처리)
+      context.go('/home');
     } else {
       // 로그인 안됨 → 로그인 화면으로
       context.go('/login');
