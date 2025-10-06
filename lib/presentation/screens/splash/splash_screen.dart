@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../providers/mock_auth_provider.dart';
+import '../../../providers/supabase_auth_provider.dart';
 import '../../../core/logging/logger.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -40,10 +40,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(mockAuthProvider);
+    final authState = ref.watch(supabaseAuthProvider);
 
     // 인증 상태 변화 감지 및 네비게이션
-    ref.listen<MockAuthState>(mockAuthProvider, (previous, next) {
+    ref.listen<SupabaseAuthState>(supabaseAuthProvider, (previous, next) {
       if (!_hasNavigated && !next.isLoading) {
         _hasNavigated = true;
         _navigateBasedOnAuthState(next);
@@ -91,7 +91,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     );
   }
 
-  Widget _buildLoadingState(MockAuthState authState) {
+  Widget _buildLoadingState(SupabaseAuthState authState) {
     if (authState.error != null) {
       return Column(
         children: [
@@ -110,7 +110,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              ref.invalidate(mockAuthProvider);
+              ref.invalidate(supabaseAuthProvider);
               _hasNavigated = false;
             },
             child: const Text('다시 시도'),
@@ -131,7 +131,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              ref.invalidate(mockAuthProvider);
+              ref.invalidate(supabaseAuthProvider);
               _hasNavigated = false;
             },
             child: const Text('다시 시도'),
@@ -140,7 +140,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       );
     }
 
-    if (!authState.isVersionSupported) {
+    if (!authState.isAppVersionSupported) {
       return Column(
         children: [
           const Icon(Icons.system_update, color: Colors.orange, size: 32),
@@ -150,9 +150,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             style: TextStyle(color: Colors.white, fontSize: 16),
           ),
           const SizedBox(height: 8),
-          Text(
-            '현재 버전: ${authState.appVersion ?? 'unknown'}',
-            style: const TextStyle(color: Colors.white70, fontSize: 12),
+          const Text(
+            '현재 버전: 1.0.0',
+            style: TextStyle(color: Colors.white70, fontSize: 12),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
@@ -171,7 +171,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     );
   }
 
-  void _navigateBasedOnAuthState(MockAuthState authState) {
+  void _navigateBasedOnAuthState(SupabaseAuthState authState) {
     if (!mounted) return;
 
     AppLogger.info('Navigating based on auth state: $authState');

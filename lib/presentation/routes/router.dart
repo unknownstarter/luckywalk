@@ -23,6 +23,8 @@ import '../screens/results/result_detail_screen.dart';
 import '../screens/results/kyc_form_screen.dart';
 import '../screens/not_found/not_found_screen.dart';
 import '../widgets/main_shell.dart';
+import '../../providers/supabase_auth_provider.dart';
+import '../screens/test/supabase_api_test_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -35,7 +37,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'splash',
         builder: (context, state) => const SplashScreen(),
       ),
-      
+
       // 인증
       GoRoute(
         path: '/login',
@@ -45,7 +47,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           child: const LoginScreen(),
         ),
       ),
-      
+
       // 온보딩
       GoRoute(
         path: '/onboarding',
@@ -55,106 +57,106 @@ final routerProvider = Provider<GoRouter>((ref) {
           child: const OnboardingScreen(),
         ),
       ),
-      
+
       // 메인 앱 (Shell Route)
       ShellRoute(
         builder: (context, state, child) => MainShell(child: child),
         routes: [
-        // 홈
-        GoRoute(
-          path: '/home',
-          name: 'home',
-          builder: (context, state) => AuthGuardWidget(
-            requireOnboarding: true,
-            child: const HomeScreen(),
+          // 홈
+          GoRoute(
+            path: '/home',
+            name: 'home',
+            builder: (context, state) => AuthGuardWidget(
+              requireOnboarding: true,
+              child: const HomeScreen(),
+            ),
           ),
-        ),
-        
-        // 응모하기 (모달 라우트)
-        GoRoute(
-          path: '/submit',
-          name: 'submit',
-          builder: (context, state) => AuthGuardWidget(
-            requireOnboarding: true,
-            child: const SubmitModalScreen(),
+
+          // 응모하기 (모달 라우트)
+          GoRoute(
+            path: '/submit',
+            name: 'submit',
+            builder: (context, state) => AuthGuardWidget(
+              requireOnboarding: true,
+              child: const SubmitModalScreen(),
+            ),
           ),
-        ),
-        
-        // 응모하기 플로우
-        GoRoute(
-          path: '/submit/loading',
-          name: 'submit-loading',
-          builder: (context, state) {
-            final ticketCount = state.extra as int? ?? 100;
-            return SubmitLoadingScreen(ticketCount: ticketCount);
-          },
-        ),
-        GoRoute(
-          path: '/submit/confirm',
-          name: 'submit-confirm',
-          builder: (context, state) {
-            final extra = state.extra as Map<String, dynamic>? ?? {};
-            final ticketCount = extra['ticketCount'] as int? ?? 100;
-            return SubmitConfirmScreen(ticketCount: ticketCount);
-          },
-        ),
-        GoRoute(
-          path: '/submit/edit',
-          name: 'submit-edit',
-          builder: (context, state) {
-            final extra = state.extra as Map<String, dynamic>? ?? {};
-            final ticketIndex = extra['ticketIndex'] as int? ?? 0;
-            final ticketNumbers = extra['ticketNumbers'] as List<int>? ?? [];
-            final ticketCount = extra['ticketCount'] as int? ?? 100;
-            return SubmitEditScreen(
-              ticketIndex: ticketIndex,
-              ticketNumbers: ticketNumbers,
-              ticketCount: ticketCount,
-            );
-          },
-        ),
-        GoRoute(
-          path: '/submit/complete',
-          name: 'submit-complete',
-          builder: (context, state) {
-            final extra = state.extra as Map<String, dynamic>? ?? {};
-            final ticketCount = extra['ticketCount'] as int? ?? 100;
-            return SubmitCompleteScreen(ticketCount: ticketCount);
-          },
-        ),
-        
-        // 내 응모
-        GoRoute(
-          path: '/my-tickets',
-          name: 'my-tickets',
-          builder: (context, state) => AuthGuardWidget(
-            requireOnboarding: true,
-            child: const MyTicketsScreen(),
+
+          // 응모하기 플로우
+          GoRoute(
+            path: '/submit/loading',
+            name: 'submit-loading',
+            builder: (context, state) {
+              final ticketCount = state.extra as int? ?? 100;
+              return SubmitLoadingScreen(ticketCount: ticketCount);
+            },
           ),
-        ),
-        
-        // 응모 결과
-        GoRoute(
-          path: '/results',
-          name: 'results',
-          builder: (context, state) => AuthGuardWidget(
-            requireOnboarding: true,
-            child: const ResultsScreen(),
+          GoRoute(
+            path: '/submit/confirm',
+            name: 'submit-confirm',
+            builder: (context, state) {
+              final extra = state.extra as Map<String, dynamic>? ?? {};
+              final ticketCount = extra['ticketCount'] as int? ?? 100;
+              return SubmitConfirmScreen(ticketCount: ticketCount);
+            },
           ),
-        ),
-        
-        // 설정
-        GoRoute(
-          path: '/settings',
-          name: 'settings',
-          builder: (context, state) => AuthGuardWidget(
-            requireOnboarding: true,
-            child: const SettingsScreen(),
+          GoRoute(
+            path: '/submit/edit',
+            name: 'submit-edit',
+            builder: (context, state) {
+              final extra = state.extra as Map<String, dynamic>? ?? {};
+              final ticketIndex = extra['ticketIndex'] as int? ?? 0;
+              final ticketNumbers = extra['ticketNumbers'] as List<int>? ?? [];
+              final ticketCount = extra['ticketCount'] as int? ?? 100;
+              return SubmitEditScreen(
+                ticketIndex: ticketIndex,
+                ticketNumbers: ticketNumbers,
+                ticketCount: ticketCount,
+              );
+            },
           ),
-        ),
+          GoRoute(
+            path: '/submit/complete',
+            name: 'submit-complete',
+            builder: (context, state) {
+              final extra = state.extra as Map<String, dynamic>? ?? {};
+              final ticketCount = extra['ticketCount'] as int? ?? 100;
+              return SubmitCompleteScreen(ticketCount: ticketCount);
+            },
+          ),
+
+          // 내 응모
+          GoRoute(
+            path: '/my-tickets',
+            name: 'my-tickets',
+            builder: (context, state) => AuthGuardWidget(
+              requireOnboarding: true,
+              child: const MyTicketsScreen(),
+            ),
+          ),
+
+          // 응모 결과
+          GoRoute(
+            path: '/results',
+            name: 'results',
+            builder: (context, state) => AuthGuardWidget(
+              requireOnboarding: true,
+              child: const ResultsScreen(),
+            ),
+          ),
+
+          // 설정
+          GoRoute(
+            path: '/settings',
+            name: 'settings',
+            builder: (context, state) => AuthGuardWidget(
+              requireOnboarding: true,
+              child: const SettingsScreen(),
+            ),
+          ),
         ],
       ),
-      
+
       // 보상 관련
       GoRoute(
         path: '/rewards/ads',
@@ -176,14 +178,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'referral',
         builder: (context, state) => const ReferralScreen(),
       ),
-      
+
       // 이용방법
       GoRoute(
         path: '/how-it-works',
         name: 'how-it-works',
         builder: (context, state) => const HowItWorksScreen(),
       ),
-      
+
+      // 테스트 화면 (개발용)
+      GoRoute(
+        path: '/test/supabase',
+        name: 'supabase-test',
+        builder: (context, state) => const SupabaseApiTestScreen(),
+      ),
+
       // 응모 결과 상세
       GoRoute(
         path: '/results/:roundId',
@@ -193,7 +202,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           return ResultDetailScreen(roundId: roundId);
         },
       ),
-      
+
       // KYC 제출
       GoRoute(
         path: '/results/:roundId/kyc',
@@ -203,7 +212,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           return KycFormScreen(roundId: roundId);
         },
       ),
-      
+
       // 초대 링크
       GoRoute(
         path: '/ref/join',
@@ -213,35 +222,32 @@ final routerProvider = Provider<GoRouter>((ref) {
           return ReferralJoinScreen(code: code);
         },
       ),
-      
     ],
-    
+
     // 리다이렉트 로직
     redirect: (context, state) {
-      // TODO: 인증 상태 확인 로직 구현
-      // final authState = ref.read(authProvider);
-      // final isOnboardingComplete = ref.read(onboardingProvider).isComplete;
-      
-      // // 인증되지 않은 사용자
-      // if (!authState.isAuthenticated) {
-      //   if (state.subloc == '/login') return null;
-      //   return '/login';
-      // }
-      
-      // // 온보딩 미완료
-      // if (!isOnboardingComplete) {
-      //   if (state.subloc == '/onboarding') return null;
-      //   return '/onboarding';
-      // }
-      
-      // // 스플래시에서 홈으로 리다이렉트
-      // if (state.subloc == '/') {
-      //   return '/home';
-      // }
-      
+      final authState = ref.read(supabaseAuthProvider);
+
+      // 인증되지 않은 사용자
+      if (!authState.isAuthenticated) {
+        if (state.uri.path == '/login') return null;
+        return '/login';
+      }
+
+      // 온보딩 미완료
+      if (!authState.isOnboarded) {
+        if (state.uri.path == '/onboarding') return null;
+        return '/onboarding';
+      }
+
+      // 스플래시에서 홈으로 리다이렉트
+      if (state.uri.path == '/') {
+        return '/home';
+      }
+
       return null;
     },
-    
+
     // 에러 처리
     errorBuilder: (context, state) => const NotFoundScreen(),
   );

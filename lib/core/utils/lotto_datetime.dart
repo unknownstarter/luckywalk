@@ -84,11 +84,11 @@ class LottoDateTime {
     final minutes = difference.inMinutes % 60;
 
     if (days > 0) {
-      return '${days}일 ${hours}시간 ${minutes}분';
+      return '$days일 $hours시간 $minutes분';
     } else if (hours > 0) {
-      return '${hours}시간 ${minutes}분';
+      return '$hours시간 $minutes분';
     } else {
-      return '${minutes}분';
+      return '$minutes분';
     }
   }
 

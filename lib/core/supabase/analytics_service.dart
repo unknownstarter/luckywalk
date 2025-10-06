@@ -1,8 +1,9 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'supabase_client.dart';
+import '../logging/logger.dart';
 
 class AnalyticsService {
-  static final SupabaseClient _supabase = SupabaseClient.instance;
+  static final LuckyWalkSupabaseClient _supabase =
+      LuckyWalkSupabaseClient.instance;
 
   // User Activity Logging
   static Future<void> logStepCount({
@@ -105,16 +106,12 @@ class AnalyticsService {
     );
   }
 
-  static Future<void> logLogout({
-    required String userId,
-  }) async {
+  static Future<void> logLogout({required String userId}) async {
     await _supabase.logUserActivity(
       userId: userId,
       activityType: 'logout',
       activityValue: 1,
-      activityData: {
-        'timestamp': DateTime.now().toIso8601String(),
-      },
+      activityData: {'timestamp': DateTime.now().toIso8601String()},
     );
   }
 
@@ -128,9 +125,7 @@ class AnalyticsService {
       userId: userId,
       activityType: 'app_open',
       activityValue: 1,
-      activityData: {
-        'timestamp': DateTime.now().toIso8601String(),
-      },
+      activityData: {'timestamp': DateTime.now().toIso8601String()},
       appVersion: appVersion,
       osVersion: osVersion,
       deviceType: deviceType,
@@ -245,10 +240,7 @@ class AnalyticsService {
       userId: userId,
       eventName: eventName,
       eventCategory: 'business',
-      eventData: {
-        ...eventData,
-        'timestamp': DateTime.now().toIso8601String(),
-      },
+      eventData: {...eventData, 'timestamp': DateTime.now().toIso8601String()},
       sessionId: sessionId,
     );
   }
@@ -260,20 +252,24 @@ class AnalyticsService {
     String? sessionId,
   }) async {
     try {
-      final batchData = events.map((event) => {
-        'user_id': userId,
-        'event_name': event['event_name'],
-        'event_category': event['event_category'],
-        'event_data': event['event_data'] ?? {},
-        'session_id': sessionId,
-        'screen_name': event['screen_name'],
-        'screen_path': event['screen_path'],
-        'timestamp': DateTime.now().toIso8601String(),
-      }).toList();
+      final batchData = events
+          .map(
+            (event) => {
+              'user_id': userId,
+              'event_name': event['event_name'],
+              'event_category': event['event_category'],
+              'event_data': event['event_data'] ?? {},
+              'session_id': sessionId,
+              'screen_name': event['screen_name'],
+              'screen_path': event['screen_path'],
+              'timestamp': DateTime.now().toIso8601String(),
+            },
+          )
+          .toList();
 
       await _supabase.client.from('app_events').insert(batchData);
     } catch (e) {
-      print('❌ Failed to log batch events: $e');
+      AppLogger.error('Failed to log batch events: $e');
     }
   }
 
@@ -286,7 +282,7 @@ class AnalyticsService {
     int? limit,
   }) async {
     try {
-      var query = _supabase.client
+      dynamic query = _supabase.client
           .from('user_activities')
           .select()
           .eq('user_id', userId);
@@ -310,7 +306,7 @@ class AnalyticsService {
       final response = await query.order('created_at', ascending: false);
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      print('❌ Failed to get user activity history: $e');
+      AppLogger.error('Failed to get user activity history: $e');
       return [];
     }
   }
@@ -321,7 +317,7 @@ class AnalyticsService {
     DateTime? endDate,
   }) async {
     try {
-      var query = _supabase.client
+      dynamic query = _supabase.client
           .from('user_activities')
           .select('activity_type, activity_value, created_at')
           .eq('user_id', userId);
@@ -359,10 +355,12 @@ class AnalyticsService {
             summary['ad_views'] = (summary['ad_views'] as int) + 1;
             break;
           case 'attendance':
-            summary['attendance_days'] = (summary['attendance_days'] as int) + 1;
+            summary['attendance_days'] =
+                (summary['attendance_days'] as int) + 1;
             break;
           case 'ticket_purchase':
-            summary['ticket_purchases'] = (summary['ticket_purchases'] as int) + value;
+            summary['ticket_purchases'] =
+                (summary['ticket_purchases'] as int) + value;
             break;
           case 'ticket_win':
             summary['ticket_wins'] = (summary['ticket_wins'] as int) + 1;
@@ -372,7 +370,7 @@ class AnalyticsService {
 
       return summary;
     } catch (e) {
-      print('❌ Failed to get user activity summary: $e');
+      AppLogger.error('Failed to get user activity summary: $e');
       return {};
     }
   }

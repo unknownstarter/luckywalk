@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../providers/mock_auth_provider.dart';
+import '../../../providers/supabase_auth_provider.dart';
 import '../../../core/logging/logger.dart';
 import '../../shared/text_styles/app_text_style.dart';
 
@@ -16,7 +16,7 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(mockAuthProvider);
+    final authState = ref.watch(supabaseAuthProvider);
 
     // 로딩 상태 처리
     if (authState.isLoading) {
@@ -34,7 +34,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               label: '닫기',
               textColor: Colors.white,
               onPressed: () {
-                ref.read(mockAuthProvider.notifier).clearError();
+                ref.read(supabaseAuthProvider.notifier).clearError();
               },
             ),
           ),
@@ -173,7 +173,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _handleAppleLogin(BuildContext context) async {
     try {
       AppLogger.info('Apple Sign In initiated');
-      await ref.read(mockAuthProvider.notifier).signInWithApple();
+      await ref.read(supabaseAuthProvider.notifier).signInWithApple();
     } catch (error) {
       AppLogger.error('Apple Sign In failed: $error');
     }
@@ -182,7 +182,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _handleKakaoLogin(BuildContext context) async {
     try {
       AppLogger.info('Kakao Sign In initiated');
-      await ref.read(mockAuthProvider.notifier).signInWithKakao();
+      await ref.read(supabaseAuthProvider.notifier).signInWithKakao();
     } catch (error) {
       AppLogger.error('Kakao Sign In failed: $error');
     }

@@ -1,11 +1,13 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../env/env_loader.dart';
+import '../logging/logger.dart';
 
-class SupabaseClient {
-  static SupabaseClient? _instance;
-  static SupabaseClient get instance => _instance ??= SupabaseClient._();
-  
-  SupabaseClient._();
+class LuckyWalkSupabaseClient {
+  static LuckyWalkSupabaseClient? _instance;
+  static LuckyWalkSupabaseClient get instance =>
+      _instance ??= LuckyWalkSupabaseClient._();
+
+  LuckyWalkSupabaseClient._();
 
   late SupabaseClient _client;
 
@@ -15,12 +17,14 @@ class SupabaseClient {
     try {
       // Load environment variables
       await EnvLoader.load();
-      
+
       final supabaseUrl = EnvLoader.supabaseUrl;
       final supabaseAnonKey = EnvLoader.supabaseAnonKey;
 
-      if (supabaseUrl == null || supabaseAnonKey == null) {
-        throw Exception('Supabase URL or Anon Key not found in environment variables');
+      if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
+        throw Exception(
+          'Supabase URL or Anon Key not found in environment variables',
+        );
       }
 
       await Supabase.initialize(
@@ -32,16 +36,14 @@ class SupabaseClient {
         realtimeClientOptions: const RealtimeClientOptions(
           logLevel: RealtimeLogLevel.info,
         ),
-        storageOptions: const StorageClientOptions(
-          retryAttempts: 3,
-        ),
+        storageOptions: const StorageClientOptions(retryAttempts: 3),
       );
 
-      _client = Supabase.instance;
-      
-      print('✅ Supabase initialized successfully');
+      _client = Supabase.instance.client;
+
+      AppLogger.info('Supabase initialized successfully');
     } catch (e) {
-      print('❌ Failed to initialize Supabase: $e');
+      AppLogger.error('Failed to initialize Supabase: $e');
       rethrow;
     }
   }
@@ -53,31 +55,24 @@ class SupabaseClient {
 
   // Database methods
   SupabaseQueryBuilder from(String table) => _client.from(table);
-  
+
   // Storage methods
   SupabaseStorageClient get storage => _client.storage;
-  
+
   // Realtime methods
   RealtimeChannel channel(String name) => _client.realtime.channel(name);
-  
+
   // Auth methods
   Future<AuthResponse> signInWithPassword({
     required String email,
     required String password,
-  }) => _client.auth.signInWithPassword(
-    email: email,
-    password: password,
-  );
+  }) => _client.auth.signInWithPassword(email: email, password: password);
 
   Future<AuthResponse> signUp({
     required String email,
     required String password,
     Map<String, dynamic>? data,
-  }) => _client.auth.signUp(
-    email: email,
-    password: password,
-    data: data,
-  );
+  }) => _client.auth.signUp(email: email, password: password, data: data);
 
   Future<void> signOut() => _client.auth.signOut();
 
@@ -88,12 +83,9 @@ class SupabaseClient {
   }) async {
     final response = await _client.functions.invoke(
       'auth-kakao',
-      body: {
-        'code': code,
-        'redirect_uri': redirectUri,
-      },
+      body: {'code': code, 'redirect_uri': redirectUri},
     );
-    
+
     if (response.data != null) {
       return AuthResponse.fromJson(response.data);
     } else {
@@ -114,7 +106,7 @@ class SupabaseClient {
         'user': user,
       },
     );
-    
+
     if (response.data != null) {
       return AuthResponse.fromJson(response.data);
     } else {
@@ -149,7 +141,7 @@ class SupabaseClient {
         'os_version': osVersion,
       });
     } catch (e) {
-      print('❌ Failed to log user activity: $e');
+      AppLogger.error('Failed to log user activity: $e');
     }
   }
 
@@ -177,7 +169,7 @@ class SupabaseClient {
         'ip_address': ipAddress,
       });
     } catch (e) {
-      print('❌ Failed to log app event: $e');
+      AppLogger.error('Failed to log app event: $e');
     }
   }
 
@@ -187,20 +179,20 @@ class SupabaseClient {
     String? status,
   }) async {
     try {
-      var query = _client.from('lottery_rounds').select();
-      
+      dynamic query = _client.from('lottery_rounds').select();
+
       if (status != null) {
         query = query.eq('status', status);
       }
-      
+
       if (limit != null) {
         query = query.limit(limit);
       }
-      
+
       final response = await query.order('round_number', ascending: false);
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      print('❌ Failed to get lottery rounds: $e');
+      AppLogger.error('Failed to get lottery rounds: $e');
       return [];
     }
   }
@@ -212,10 +204,10 @@ class SupabaseClient {
           .select()
           .eq('status', 'active')
           .single();
-      
+
       return response;
     } catch (e) {
-      print('❌ Failed to get current lottery round: $e');
+      AppLogger.error('Failed to get current lottery round: $e');
       return null;
     }
   }
@@ -226,15 +218,15 @@ class SupabaseClient {
   }) async {
     try {
       var query = _client.from('user_tickets').select().eq('user_id', userId);
-      
+
       if (roundId != null) {
         query = query.eq('round_id', roundId);
       }
-      
+
       final response = await query.order('created_at', ascending: false);
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      print('❌ Failed to get user tickets: $e');
+      AppLogger.error('Failed to get user tickets: $e');
       return [];
     }
   }
@@ -247,22 +239,26 @@ class SupabaseClient {
     String purchaseMethod = 'free',
   }) async {
     try {
-      final ticketData = tickets.map((ticket) => {
-        'user_id': userId,
-        'round_id': roundId,
-        'ticket_numbers': ticket,
-        'ticket_type': ticketType,
-        'purchase_method': purchaseMethod,
-      }).toList();
+      final ticketData = tickets
+          .map(
+            (ticket) => {
+              'user_id': userId,
+              'round_id': roundId,
+              'ticket_numbers': ticket,
+              'ticket_type': ticketType,
+              'purchase_method': purchaseMethod,
+            },
+          )
+          .toList();
 
       final response = await _client
           .from('user_tickets')
           .insert(ticketData)
           .select();
-      
+
       return response.first;
     } catch (e) {
-      print('❌ Failed to submit tickets: $e');
+      AppLogger.error('Failed to submit tickets: $e');
       return null;
     }
   }
@@ -274,19 +270,19 @@ class SupabaseClient {
   }) async {
     try {
       var query = _client.from('rewards').select();
-      
+
       if (rewardType != null) {
         query = query.eq('reward_type', rewardType);
       }
-      
+
       if (isActive != null) {
         query = query.eq('is_active', isActive);
       }
-      
+
       final response = await query.order('order_index', ascending: true);
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      print('❌ Failed to get rewards: $e');
+      AppLogger.error('Failed to get rewards: $e');
       return [];
     }
   }
@@ -297,15 +293,15 @@ class SupabaseClient {
   }) async {
     try {
       var query = _client.from('user_rewards').select().eq('user_id', userId);
-      
+
       if (isClaimed != null) {
         query = query.eq('is_claimed', isClaimed);
       }
-      
+
       final response = await query.order('earned_at', ascending: false);
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      print('❌ Failed to get user rewards: $e');
+      AppLogger.error('Failed to get user rewards: $e');
       return [];
     }
   }
@@ -318,10 +314,10 @@ class SupabaseClient {
           .select()
           .eq('user_id', userId)
           .single();
-      
+
       return response;
     } catch (e) {
-      print('❌ Failed to get user profile: $e');
+      AppLogger.error('Failed to get user profile: $e');
       return null;
     }
   }
@@ -340,14 +336,18 @@ class SupabaseClient {
       final updateData = <String, dynamic>{
         'updated_at': DateTime.now().toIso8601String(),
       };
-      
+
       if (nickname != null) updateData['nickname'] = nickname;
-      if (profileImageUrl != null) updateData['profile_image_url'] = profileImageUrl;
+      if (profileImageUrl != null) {
+        updateData['profile_image_url'] = profileImageUrl;
+      }
       if (birthYear != null) updateData['birth_year'] = birthYear;
       if (gender != null) updateData['gender'] = gender;
       if (language != null) updateData['language'] = language;
       if (timezone != null) updateData['timezone'] = timezone;
-      if (notificationSettings != null) updateData['notification_settings'] = notificationSettings;
+      if (notificationSettings != null) {
+        updateData['notification_settings'] = notificationSettings;
+      }
 
       final response = await _client
           .from('user_profiles')
@@ -355,10 +355,10 @@ class SupabaseClient {
           .eq('user_id', userId)
           .select()
           .single();
-      
+
       return response;
     } catch (e) {
-      print('❌ Failed to update user profile: $e');
+      AppLogger.error('Failed to update user profile: $e');
       return null;
     }
   }

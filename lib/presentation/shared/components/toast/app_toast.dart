@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../index.dart';
 import '../../text_styles/app_text_style.dart';
-import '../../colors/app_colors.dart';
 
 enum ToastType {
   success,

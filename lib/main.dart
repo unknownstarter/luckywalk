@@ -22,6 +22,15 @@ void main() async {
   await Supabase.initialize(
     url: EnvLoader.supabaseUrl,
     anonKey: EnvLoader.supabaseAnonKey,
+    authOptions: const FlutterAuthClientOptions(
+      authFlowType: AuthFlowType.pkce,
+    ),
+    realtimeClientOptions: const RealtimeClientOptions(
+      logLevel: RealtimeLogLevel.info,
+    ),
+    storageOptions: const StorageClientOptions(
+      retryAttempts: 3,
+    ),
   );
 
   // Initialize Google Mobile Ads (현재 Mock 사용으로 주석 처리)

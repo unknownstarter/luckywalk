@@ -1,7 +1,6 @@
 /// LuckyWalk 에러코드 체계
 /// 생성일: 2025-09-17 23:49:41 KST
 /// 설명: 복권앱의 모든 에러코드를 체계적으로 관리
-
 class ErrorCodes {
   // 인증 관련 에러 (AUTH_001 ~ AUTH_099)
   static const String authLoginFailed = 'AUTH_001';

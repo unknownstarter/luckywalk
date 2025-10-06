@@ -86,11 +86,7 @@ class EnterButton extends StatelessWidget {
   final int ticketCount;
   final VoidCallback? onPressed;
 
-  const EnterButton({
-    super.key,
-    required this.ticketCount,
-    this.onPressed,
-  });
+  const EnterButton({super.key, required this.ticketCount, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +118,7 @@ class EnterButton extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // 티켓 카운트 배지
           Positioned(
             top: 8,
@@ -134,7 +130,7 @@ class EnterButton extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: AppText(
-                '${ticketCount}장',
+                '$ticketCount장',
                 style: AppTextStyle.caption,
                 color: Colors.white,
               ),

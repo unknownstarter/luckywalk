@@ -1,7 +1,6 @@
 /// LuckyWalk 이벤트코드 체계
 /// 생성일: 2025-09-17 23:49:41 KST
 /// 설명: 복권앱의 모든 이벤트코드를 체계적으로 관리
-
 class EventCodes {
   // 사용자 인증 이벤트 (USER_AUTH_001 ~ USER_AUTH_099)
   static const String userLogin = 'USER_AUTH_001';

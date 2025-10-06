@@ -1,7 +1,6 @@
 /// LuckyWalk 보안 이벤트 코드 체계
 /// 생성일: 2025-09-17 23:49:41 KST
 /// 설명: 복권앱의 보안 관련 이벤트 코드를 체계적으로 관리
-
 class SecurityCodes {
   // 어뷰징 감지 (ABUSE_001 ~ ABUSE_099)
   static const String abuseMultipleAccounts = 'ABUSE_001';
