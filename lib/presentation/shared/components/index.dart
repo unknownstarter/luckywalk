@@ -16,6 +16,8 @@ export 'bottom_navigation.dart';
 
 // Modals
 export 'modals/index.dart';
+export 'toast/index.dart';
+export 'time_display/index.dart';
 
 // Text
 export 'text/app_text.dart';

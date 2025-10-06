@@ -43,7 +43,34 @@ class _SubmitConfirmScreenState extends State<SubmitConfirmScreen> {
   }
 
   void _submitTickets() {
-    // 실제 응모 로직 (추후 구현)
+    // 응모 완료 시점에서 최종 검증
+    final validation = SubmitPolicy.validateFinalSubmission(
+      ticketCount: widget.ticketCount,
+      tickets: _generatedTickets,
+    );
+
+    if (!validation['isValid']) {
+      // 에러가 있는 경우 토스트로 알림
+      final errors = validation['errors'] as List<String>;
+      AppToast.error(
+        context,
+        message: errors.join('\n'),
+        duration: const Duration(seconds: 5),
+      );
+      return;
+    }
+
+    // 경고사항이 있는 경우 확인 토스트
+    final warnings = validation['warnings'] as List<String>;
+    if (warnings.isNotEmpty) {
+      AppToast.warning(
+        context,
+        message: warnings.join('\n'),
+        duration: const Duration(seconds: 4),
+      );
+    }
+
+    // 응모 완료 화면으로 이동
     context.go('/submit/complete', extra: {
       'ticketCount': widget.ticketCount,
     });

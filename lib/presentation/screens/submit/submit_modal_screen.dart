@@ -42,24 +42,32 @@ class _SubmitModalScreenState extends State<SubmitModalScreen> {
   void _submitTickets() {
     // 응모 정책 확인
     if (!SubmitPolicy.canSubmit()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('응모 마감 시간이 지났습니다. 다음 회차를 기다려주세요.'),
-          backgroundColor: Colors.red,
-        ),
+      AppToast.error(
+        context,
+        message: SubmitPolicy.getTimeExceededMessage(),
+        duration: const Duration(seconds: 6),
       );
       return;
     }
     
     // 응모 수량 유효성 검증
     if (!SubmitPolicy.isValidTicketCount(_ticketCount)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('응모 수량이 올바르지 않습니다.'),
-          backgroundColor: Colors.red,
-        ),
+      AppToast.error(
+        context,
+        message: '응모 수량이 올바르지 않습니다.\n100장~10,000장까지 100장 단위로 응모 가능합니다.',
+        duration: const Duration(seconds: 4),
       );
       return;
+    }
+    
+    // 남은 시간 확인 토스트
+    final remainingTime = SubmitPolicy.getRemainingTimeString();
+    if (remainingTime != '응모 마감') {
+      AppToast.info(
+        context,
+        message: '응모 마감까지 $remainingTime 남았습니다.',
+        duration: const Duration(seconds: 2),
+      );
     }
     
     context.pop();
