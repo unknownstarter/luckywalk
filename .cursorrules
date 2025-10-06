@@ -274,7 +274,11 @@ final data = ref.watch(provider).value;
 - ✅ **한국 로또 시간 정책** (LottoDateTime 유틸리티, 실제 로또 시간 정책)
 - ✅ **응모하기 플로우 정책 완성** (5단계 플로우, 시간 검증, 토스트 시스템)
 - ✅ **문서 업데이트** (PRD, 프로젝트 Task, 개발 룰 히스토리, 응모 플로우 정책)
-- ⏳ Supabase 스키마 적용 예정
+- ✅ **Supabase 백엔드 아키텍처 완전 설계** (11개 테이블, 인증, 로깅, 백오피스, RLS)
+- ✅ **Edge Functions 구현** (auth-kakao, auth-apple, process-winners)
+- ✅ **Flutter 연동 코드** (SupabaseClient, AnalyticsService)
+- ✅ **기존 스키마 통합** (005_integrated_schema.sql)
+- ⏳ Supabase 프로젝트에 스키마 적용 예정
 - ⏳ 실제 인증 시스템 연동 예정
 
 ---
