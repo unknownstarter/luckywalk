@@ -12,7 +12,6 @@ import '../screens/submit/submit_edit_screen.dart';
 import '../screens/submit/submit_complete_screen.dart';
 import '../screens/my_tickets/my_tickets_screen.dart';
 import '../screens/results/results_screen.dart';
-import '../screens/settings/settings_screen.dart';
 import '../screens/rewards/ads_reward_screen.dart';
 import '../screens/rewards/steps_reward_screen.dart';
 import '../screens/attendance/attendance_screen.dart';
@@ -27,6 +26,7 @@ import '../../providers/supabase_auth_provider.dart';
 import '../screens/test/supabase_api_test_screen.dart';
 import '../screens/my_entries/my_entries_screen.dart';
 import '../screens/hall_of_fame/hall_of_fame_screen.dart';
+import '../screens/settings/settings_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -214,6 +214,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/hall-of-fame',
         name: 'hall-of-fame',
         builder: (context, state) => const HallOfFameScreen(),
+      ),
+      
+      // 설정 화면
+      GoRoute(
+        path: '/settings',
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
 
       // 응모 결과 상세
