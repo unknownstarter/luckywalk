@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../shared/index.dart';
+import '../../../core/utils/index.dart';
 
+// 기존 SubmitModalScreen을 SubmitModalContent로 변경
 class SubmitModalScreen extends StatefulWidget {
   const SubmitModalScreen({super.key});
 
@@ -9,143 +12,165 @@ class SubmitModalScreen extends StatefulWidget {
 }
 
 class _SubmitModalScreenState extends State<SubmitModalScreen> {
-  int _ticketCount = 100;
-  final int _maxTickets = 10000; // 보유 복권 수 (예시)
-  final int _minTickets = 100;
+  int _ticketCount = 0;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('응모하기'),
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => context.pop(),
-        ),
+    return AppBottomSheet(
+      title: '얼마나 응모할까요?',
+      content: SubmitModalContent(
+        onTicketCountChanged: (count) {
+          setState(() {
+            _ticketCount = count;
+          });
+        },
       ),
-      body: Padding(
+      footer: Container(
         padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 타이틀
-            const Text(
-              '얼마나 응모할까요?',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 24),
-            
-            // 회차 카드
-            _buildRoundCard(),
-            const SizedBox(height: 24),
-            
-            // 보유 복권 수
-            _buildTicketBalance(),
-            const SizedBox(height: 24),
-            
-            // 수량 스테퍼
-            _buildQuantityStepper(),
-            const SizedBox(height: 16),
-            
-            // 규칙 안내
-            const Text(
-              '*한번에 100장부터 응모할 수 있어요',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-              ),
-            ),
-            const Spacer(),
-            
-            // 응모하기 버튼
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _canSubmit() ? _submitTickets : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1E3A8A),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: Text(
-                  '응모하기',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: _canSubmit() ? Colors.white : Colors.grey,
-                  ),
-                ),
-              ),
-            ),
-          ],
+        child: SizedBox(
+          width: double.infinity,
+          child: PrimaryButton(
+            text: '응모하기',
+            onPressed: _ticketCount > 0 ? _submitTickets : null,
+            isEnabled: _ticketCount > 0,
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildRoundCard() {
+  void _submitTickets() {
+    context.pop();
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('$_ticketCount장 응모가 완료되었습니다!')));
+  }
+}
+
+class SubmitModalContent extends StatefulWidget {
+  final Function(int) onTicketCountChanged;
+
+  const SubmitModalContent({super.key, required this.onTicketCountChanged});
+
+  @override
+  State<SubmitModalContent> createState() => _SubmitModalContentState();
+}
+
+class _SubmitModalContentState extends State<SubmitModalContent> {
+  int _ticketCount = 0; // Figma 디자인에 따라 0부터 시작
+  final int _maxTickets = 10000; // 보유 복권 수
+  final int _minTickets = 100; // 최소 응모 단위
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 회차 정보 카드
+        _buildRoundInfoCard(),
+        const SizedBox(height: 24),
+
+        // 보유 복권 수
+        _buildTicketBalance(),
+        const SizedBox(height: 24),
+
+        // 수량 스테퍼
+        _buildQuantityStepper(),
+        const SizedBox(height: 16),
+
+        // 규칙 안내
+        AppText(
+          '*한번에 100장까지 응모 할 수 있어요',
+          style: AppTextStyle.caption,
+          color: AppColors.textSecondary,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRoundInfoCard() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[300]!),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE9E9E9)),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // 로또 6/45 제목
+          AppText(
+            '로또 6/45',
+            style: AppTextStyle.headline3,
+            color: AppColors.textPrimary,
+          ),
+          const SizedBox(height: 8),
+
+          // 회차 정보
+          AppText(
+            '${LottoDateTime.getNextRoundNumber()}회차  |  ${LottoDateTime.getAnnouncementTimeString()} 발표 예정',
+            style: AppTextStyle.body,
+            color: AppColors.textPrimary,
+          ),
+          const SizedBox(height: 16),
+
+          // 당첨금과 남은 시간
           Row(
             children: [
-              const Icon(
-                Icons.confirmation_number,
-                color: Color(0xFF1E3A8A),
-                size: 24,
-              ),
-              const SizedBox(width: 8),
-              const Text(
-                '로또 6/45',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+              // 당첨금
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF0F0F0),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.lock,
+                        size: 20,
+                        color: AppColors.textSecondary,
+                      ),
+                      const SizedBox(width: 8),
+                      AppText(
+                        '1억 2,000만원',
+                        style: AppTextStyle.body,
+                        color: AppColors.textPrimary,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1E3A8A),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  '3일 남음',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
+              const SizedBox(width: 12),
+
+              // 남은 시간
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF0F0F0),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.access_time,
+                        size: 20,
+                        color: AppColors.textSecondary,
+                      ),
+                      const SizedBox(width: 8),
+                      AppText(
+                        '${LottoDateTime.getDaysUntilAnnouncement()}일 남음',
+                        style: AppTextStyle.body,
+                        color: AppColors.textPrimary,
+                      ),
+                    ],
                   ),
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            '1234회차 | 2025.08.27 발표 예정',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            '1억 2,000만원',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1E3A8A),
-            ),
           ),
         ],
       ),
@@ -155,25 +180,23 @@ class _SubmitModalScreenState extends State<SubmitModalScreen> {
   Widget _buildTicketBalance() {
     return Row(
       children: [
-        const Text(
-          '보유하고 있는 복권 ',
-          style: TextStyle(fontSize: 16),
+        AppText(
+          '보유하고 있는 복권',
+          style: AppTextStyle.subtitle,
+          color: AppColors.textPrimary,
         ),
+        const SizedBox(width: 8),
         GestureDetector(
           onTap: () {
             // 보유 복권 상세 보기
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('보유 복권 상세 보기')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('보유 복권 상세 보기')));
           },
-          child: Text(
+          child: AppText(
             '$_maxTickets장',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1E3A8A),
-              decoration: TextDecoration.underline,
-            ),
+            style: AppTextStyle.subtitle,
+            color: AppColors.primaryBlue,
           ),
         ),
       ],
@@ -182,47 +205,93 @@ class _SubmitModalScreenState extends State<SubmitModalScreen> {
 
   Widget _buildQuantityStepper() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[300]!),
+        color: const Color(0xFFF0F0F0),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-            onPressed: _ticketCount > _minTickets ? _decreaseCount : null,
-            icon: const Icon(Icons.remove_circle_outline),
-            iconSize: 32,
-            color: _ticketCount > _minTickets ? const Color(0xFF1E3A8A) : Colors.grey,
-          ),
-          Text(
-            '$_ticketCount',
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+          // 감소 버튼
+          GestureDetector(
+            onTap: _decreaseCount,
+            child: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: _ticketCount > _minTickets
+                      ? const Color(0xFFC9C9C9)
+                      : const Color(0xFFD9D9D9),
+                ),
+              ),
+              child: Icon(
+                Icons.remove,
+                color: _ticketCount > _minTickets
+                    ? AppColors.textPrimary
+                    : const Color(0xFFD9D9D9),
+                size: 24,
+              ),
             ),
           ),
-          IconButton(
-            onPressed: _ticketCount < _maxTickets ? _increaseCount : null,
-            icon: const Icon(Icons.add_circle_outline),
-            iconSize: 32,
-            color: _ticketCount < _maxTickets ? const Color(0xFF1E3A8A) : Colors.grey,
+
+          // 수량 표시 (탭 가능)
+          GestureDetector(
+            onTap: _showNumberInputDialog,
+            child: Container(
+              width: 116,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Center(
+                child: AppText(
+                  '$_ticketCount',
+                  style: AppTextStyle.title,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+          ),
+
+          // 증가 버튼
+          GestureDetector(
+            onTap: _increaseCount,
+            child: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: _ticketCount < _maxTickets
+                      ? const Color(0xFFC9C9C9)
+                      : const Color(0xFFD9D9D9),
+                ),
+              ),
+              child: Icon(
+                Icons.add,
+                color: _ticketCount < _maxTickets
+                    ? AppColors.textPrimary
+                    : const Color(0xFFD9D9D9),
+                size: 24,
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  bool _canSubmit() {
-    return _ticketCount >= _minTickets && _ticketCount <= _maxTickets;
-  }
-
   void _decreaseCount() {
     if (_ticketCount > _minTickets) {
       setState(() {
         _ticketCount = (_ticketCount - 100).clamp(_minTickets, _maxTickets);
+        widget.onTicketCountChanged(_ticketCount);
       });
     }
   }
@@ -231,58 +300,48 @@ class _SubmitModalScreenState extends State<SubmitModalScreen> {
     if (_ticketCount < _maxTickets) {
       setState(() {
         _ticketCount = (_ticketCount + 100).clamp(_minTickets, _maxTickets);
+        widget.onTicketCountChanged(_ticketCount);
       });
     }
   }
 
-  void _submitTickets() {
-    // TODO: 실제 응모 로직 구현
+  void _showNumberInputDialog() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('응모 확인'),
-        content: Text('$_ticketCount장을 응모하시겠습니까?'),
+        title: const Text('복권 수량 입력'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: '응모할 복권 수량',
+                hintText: '100의 배수로 입력하세요',
+              ),
+              onChanged: (value) {
+                final intValue = int.tryParse(value) ?? 0;
+                if (intValue >= _minTickets && intValue <= _maxTickets) {
+                  setState(() {
+                    _ticketCount = intValue;
+                    widget.onTicketCountChanged(_ticketCount);
+                  });
+                }
+              },
+            ),
+          ],
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('취소'),
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              _processSubmission();
-            },
-            child: const Text('응모하기'),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('확인'),
           ),
         ],
       ),
     );
-  }
-
-  void _processSubmission() {
-    // 로딩 표시
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
-
-    // 시뮬레이션된 응모 처리
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        Navigator.of(context).pop(); // 로딩 다이얼로그 닫기
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('$_ticketCount장 응모 완료!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        
-        context.pop(); // 모달 닫기
-      }
-    });
   }
 }

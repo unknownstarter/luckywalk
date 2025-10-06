@@ -8,7 +8,7 @@ Flutter + Supabase 기반의 복권 앱 "LuckyWalk"입니다. 사용자가 걸�
 - **Backend**: Supabase (PostgreSQL + Edge Functions)
 - **State Management**: Riverpod
 - **Routing**: GoRouter
-- **현재 상태**: Mock 데이터로 UI/UX 개발 중
+- **현재 상태**: 핵심 정책 구현 완료, 한국 로또 시간 정책 적용, Supabase 연동 준비
 
 ## 📁 **디렉토리 구조**
 ```
@@ -250,7 +250,7 @@ final data = ref.watch(provider).value;
 - `docs/ia.md`: 정보 아키텍처
 - `docs/click-architecture.md`: UX 플로우
 
-## 🎯 **현재 진행 상황 (2025-09-16)**
+## 🎯 **현재 진행 상황 (2025-09-17)**
 - ✅ 디자인 시스템 구축 완료
 - ✅ Mock 데이터 Provider 구현
 - ✅ 기본 화면 구조 완성
@@ -267,8 +267,14 @@ final data = ref.watch(provider).value;
 - ✅ **Task 관리 문서 작성** (project-tasks.md)
 - ✅ **다른 컴퓨터 작업 가이드 추가** (개발 환경 설정, 문제 해결)
 - ✅ **룰 문서 최적화** (핵심 내용만 정리, 문서 크기 최적화)
-- ⏳ Supabase 연동 예정
-- ⏳ 실제 데이터 연동 예정
+- ✅ **핵심 정책 구현 완료** (걸음수/광고/출석체크 보상, 권한 관리)
+- ✅ **Figma 디자인 매칭** (스플래시/로그인/홈/응모하기 바텀시트)
+- ✅ **재사용 가능한 컴포넌트** (AppBottomSheet, RewardCard, LottoInfoCard)
+- ✅ **GoRouter ShellRoute** (하단 네비게이션 완벽 구현)
+- ✅ **한국 로또 시간 정책** (LottoDateTime 유틸리티, 실제 로또 시간 정책)
+- ✅ **문서 업데이트** (PRD, 프로젝트 Task, 개발 룰 히스토리)
+- ⏳ Supabase 스키마 적용 예정
+- ⏳ 실제 인증 시스템 연동 예정
 
 ---
 

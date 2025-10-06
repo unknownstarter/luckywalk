@@ -145,7 +145,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   icon: const Icon(Icons.chat, color: Colors.black),
                   label: const Text('카카오로 로그인', style: AppTextStyle.buttonText),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFEE500),
+                    backgroundColor: const Color(0xFFF6E24B),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),

@@ -5,7 +5,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'dart:async';
 
 import '../../core/logging/logger.dart';
-import '../../core/env/env.dart';
+import '../../core/env/env_loader.dart';
 
 /// Supabase 인증 상태
 class SupabaseAuthState {
@@ -69,7 +69,7 @@ class SupabaseAuthNotifier extends StateNotifier<SupabaseAuthState> {
       _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen(
         _handleAuthStateChange,
         onError: (error) {
-          AppLogger.error('Auth state change error', error: error);
+          AppLogger.error('Auth state change error', error);
           state = state.copyWith(
             isLoading: false,
             error: '인증 상태 확인 중 오류가 발생했습니다.',
@@ -81,7 +81,7 @@ class SupabaseAuthNotifier extends StateNotifier<SupabaseAuthState> {
       _connectivitySubscription = Connectivity().onConnectivityChanged.listen(
         _handleConnectivityChange,
         onError: (error) {
-          AppLogger.error('Connectivity change error', error: error);
+          AppLogger.error('Connectivity change error', error);
         },
       );
 
@@ -89,7 +89,7 @@ class SupabaseAuthNotifier extends StateNotifier<SupabaseAuthState> {
       await _restoreSession();
       
     } catch (e, stackTrace) {
-      AppLogger.error('Auth initialization error', error: e, stackTrace: stackTrace);
+      AppLogger.error('Auth initialization error', e, stackTrace);
       state = state.copyWith(
         isLoading: false,
         error: '인증 초기화 중 오류가 발생했습니다.',
@@ -108,7 +108,7 @@ class SupabaseAuthNotifier extends StateNotifier<SupabaseAuthState> {
         AppLogger.warning('No network connection');
       }
     } catch (e) {
-      AppLogger.error('Network check error', error: e);
+      AppLogger.error('Network check error', e);
       state = state.copyWith(hasNetworkConnection: false);
     }
   }
@@ -117,7 +117,7 @@ class SupabaseAuthNotifier extends StateNotifier<SupabaseAuthState> {
     try {
       final packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = packageInfo.version;
-      final isSupported = _isVersionSupported(currentVersion, Env.minSupportedAppVersion);
+      final isSupported = _isVersionSupported(currentVersion, EnvLoader.minSupportedAppVersion);
       
       state = state.copyWith(isAppVersionSupported: isSupported);
       
@@ -125,7 +125,7 @@ class SupabaseAuthNotifier extends StateNotifier<SupabaseAuthState> {
         AppLogger.warning('Unsupported app version: $currentVersion');
       }
     } catch (e) {
-      AppLogger.error('App version check error', error: e);
+      AppLogger.error('App version check error', e);
       state = state.copyWith(isAppVersionSupported: false);
     }
   }
@@ -139,10 +139,7 @@ class SupabaseAuthNotifier extends StateNotifier<SupabaseAuthState> {
     final user = authState.session?.user;
     final isAuthenticated = user != null;
     
-    AppLogger.info('Auth state changed', extra: {
-      'isAuthenticated': isAuthenticated,
-      'userId': user?.id,
-    });
+    AppLogger.info('Auth state changed - isAuthenticated: $isAuthenticated, userId: ${user?.id}');
 
     state = state.copyWith(
       isLoading: false,
@@ -160,10 +157,7 @@ class SupabaseAuthNotifier extends StateNotifier<SupabaseAuthState> {
   void _handleConnectivityChange(ConnectivityResult result) {
     final hasConnection = result != ConnectivityResult.none;
     
-    AppLogger.info('Connectivity changed', extra: {
-      'hasConnection': hasConnection,
-      'result': result.toString(),
-    });
+    AppLogger.info('Connectivity changed - hasConnection: $hasConnection, result: ${result.toString()}');
 
     state = state.copyWith(hasNetworkConnection: hasConnection);
   }
@@ -176,10 +170,7 @@ class SupabaseAuthNotifier extends StateNotifier<SupabaseAuthState> {
       final session = Supabase.instance.client.auth.currentSession;
       
       if (session != null) {
-        AppLogger.info('Session restored', extra: {
-          'userId': session.user.id,
-          'expiresAt': session.expiresAt?.toIso8601String(),
-        });
+        AppLogger.info('Session restored - userId: ${session.user.id}, expiresAt: ${session.expiresAt}');
         
         state = state.copyWith(
           isLoading: false,
@@ -197,7 +188,7 @@ class SupabaseAuthNotifier extends StateNotifier<SupabaseAuthState> {
         );
       }
     } catch (e, stackTrace) {
-      AppLogger.error('Session restoration error', error: e, stackTrace: stackTrace);
+      AppLogger.error('Session restoration error', e, stackTrace);
       state = state.copyWith(
         isLoading: false,
         error: '세션 복원 중 오류가 발생했습니다.',
@@ -216,14 +207,11 @@ class SupabaseAuthNotifier extends StateNotifier<SupabaseAuthState> {
 
       final isOnboarded = response['nickname'] != null && response['nickname'].isNotEmpty;
       
-      AppLogger.info('Onboarding status checked', extra: {
-        'userId': user.id,
-        'isOnboarded': isOnboarded,
-      });
+      AppLogger.info('Onboarding status checked - userId: ${user.id}, isOnboarded: $isOnboarded');
 
       state = state.copyWith(isOnboarded: isOnboarded);
     } catch (e) {
-      AppLogger.error('Onboarding status check error', error: e);
+      AppLogger.error('Onboarding status check error', e);
       // 온보딩 상태 확인 실패 시 기본값으로 설정
       state = state.copyWith(isOnboarded: false);
     }
@@ -243,12 +231,10 @@ class SupabaseAuthNotifier extends StateNotifier<SupabaseAuthState> {
       );
 
       if (response.user != null) {
-        AppLogger.info('Apple sign in successful', extra: {
-          'userId': response.user!.id,
-        });
+        AppLogger.info('Apple sign in successful - userId: ${response.user!.id}');
       }
     } catch (e, stackTrace) {
-      AppLogger.error('Apple sign in error', error: e, stackTrace: stackTrace);
+      AppLogger.error('Apple sign in error', e, stackTrace);
       state = state.copyWith(
         isLoading: false,
         error: 'Apple 로그인 중 오류가 발생했습니다.',
@@ -269,7 +255,7 @@ class SupabaseAuthNotifier extends StateNotifier<SupabaseAuthState> {
       
       AppLogger.info('Kakao sign in successful');
     } catch (e, stackTrace) {
-      AppLogger.error('Kakao sign in error', error: e, stackTrace: stackTrace);
+      AppLogger.error('Kakao sign in error', e, stackTrace);
       state = state.copyWith(
         isLoading: false,
         error: 'Kakao 로그인 중 오류가 발생했습니다.',
@@ -293,7 +279,7 @@ class SupabaseAuthNotifier extends StateNotifier<SupabaseAuthState> {
       
       AppLogger.info('Sign out successful');
     } catch (e, stackTrace) {
-      AppLogger.error('Sign out error', error: e, stackTrace: stackTrace);
+      AppLogger.error('Sign out error', e, stackTrace);
       state = state.copyWith(
         error: '로그아웃 중 오류가 발생했습니다.',
       );
@@ -308,10 +294,7 @@ class SupabaseAuthNotifier extends StateNotifier<SupabaseAuthState> {
         throw Exception('User not authenticated');
       }
 
-      AppLogger.info('Completing onboarding', extra: {
-        'userId': user.id,
-        'nickname': nickname,
-      });
+      AppLogger.info('Completing onboarding - userId: ${user.id}, nickname: $nickname');
 
       // 사용자 프로필 업데이트
       await Supabase.instance.client
@@ -323,7 +306,7 @@ class SupabaseAuthNotifier extends StateNotifier<SupabaseAuthState> {
       
       AppLogger.info('Onboarding completed successfully');
     } catch (e, stackTrace) {
-      AppLogger.error('Onboarding completion error', error: e, stackTrace: stackTrace);
+      AppLogger.error('Onboarding completion error', e, stackTrace);
       state = state.copyWith(
         error: '온보딩 완료 중 오류가 발생했습니다.',
       );

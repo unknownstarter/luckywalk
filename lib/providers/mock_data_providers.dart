@@ -28,47 +28,58 @@ class MockUserProfile {
   final String userId;
   final int totalTickets;
   final int todaySteps;
-  final bool attendanceChecked;
+  final int attendanceCount; // 최대 5번까지 가능
   final int adsWatchedToday;
   final int maxAdsToday;
-  final Map<int, bool> stepsRewards; // step threshold -> claimed
-  final Map<int, bool> adsRewards; // ad sequence -> claimed
+  final Map<int, bool> stepsRewards; // step threshold -> claimed (10단계)
+  final Map<int, bool> adsRewards; // ad sequence -> claimed (10단계)
   final DateTime lastResetDate;
+  final bool hasNotificationPermission;
+  final bool hasActivityPermission;
 
   const MockUserProfile({
     required this.userId,
     required this.totalTickets,
     required this.todaySteps,
-    required this.attendanceChecked,
+    required this.attendanceCount,
     required this.adsWatchedToday,
     required this.maxAdsToday,
     required this.stepsRewards,
     required this.adsRewards,
     required this.lastResetDate,
+    required this.hasNotificationPermission,
+    required this.hasActivityPermission,
   });
 
   MockUserProfile copyWith({
     int? totalTickets,
     int? todaySteps,
-    bool? attendanceChecked,
+    int? attendanceCount,
     int? adsWatchedToday,
     int? maxAdsToday,
     Map<int, bool>? stepsRewards,
     Map<int, bool>? adsRewards,
     DateTime? lastResetDate,
+    bool? hasNotificationPermission,
+    bool? hasActivityPermission,
   }) {
     return MockUserProfile(
       userId: userId,
       totalTickets: totalTickets ?? this.totalTickets,
       todaySteps: todaySteps ?? this.todaySteps,
-      attendanceChecked: attendanceChecked ?? this.attendanceChecked,
+      attendanceCount: attendanceCount ?? this.attendanceCount,
       adsWatchedToday: adsWatchedToday ?? this.adsWatchedToday,
       maxAdsToday: maxAdsToday ?? this.maxAdsToday,
       stepsRewards: stepsRewards ?? this.stepsRewards,
       adsRewards: adsRewards ?? this.adsRewards,
       lastResetDate: lastResetDate ?? this.lastResetDate,
+      hasNotificationPermission: hasNotificationPermission ?? this.hasNotificationPermission,
+      hasActivityPermission: hasActivityPermission ?? this.hasActivityPermission,
     );
   }
+
+  // Legacy getter for backward compatibility
+  bool get attendanceChecked => attendanceCount > 0;
 }
 
 class MockTicket {
@@ -128,34 +139,36 @@ class MockUserProfileNotifier extends StateNotifier<MockUserProfile> {
       userId: 'mock_user_123',
       totalTickets: 1250,
       todaySteps: 7500,
-      attendanceChecked: false,
+      attendanceCount: 2, // 최대 5번까지 가능
       adsWatchedToday: 3,
       maxAdsToday: 10,
       stepsRewards: {
         1000: true,  // 1k 걸음 완료
         2000: true,  // 2k 걸음 완료
         3000: true,  // 3k 걸음 완료
-        4000: false, // 4k 걸음 미완료
-        5000: false,
-        6000: false,
-        7000: false,
-        8000: false,
-        9000: false,
-        10000: false,
+        4000: true,  // 4k 걸음 완료
+        5000: true,  // 5k 걸음 완료
+        6000: true,  // 6k 걸음 완료
+        7000: true,  // 7k 걸음 완료
+        8000: false, // 8k 걸음 미완료
+        9000: false, // 9k 걸음 미완료
+        10000: false, // 10k 걸음 미완료
       },
       adsRewards: {
         1: true,  // 1번째 광고 완료
         2: true,  // 2번째 광고 완료
         3: true,  // 3번째 광고 완료
         4: false, // 4번째 광고 미완료
-        5: false,
-        6: false,
-        7: false,
-        8: false,
-        9: false,
-        10: false,
+        5: false, // 5번째 광고 미완료
+        6: false, // 6번째 광고 미완료
+        7: false, // 7번째 광고 미완료
+        8: false, // 8번째 광고 미완료
+        9: false, // 9번째 광고 미완료
+        10: false, // 10번째 광고 미완료
       },
       lastResetDate: today,
+      hasNotificationPermission: true,
+      hasActivityPermission: true,
     );
   }
 
@@ -165,15 +178,15 @@ class MockUserProfileNotifier extends StateNotifier<MockUserProfile> {
 
   // 출석체크
   Future<void> checkAttendance() async {
-    if (state.attendanceChecked) {
-      throw Exception('이미 출석체크를 완료했습니다.');
+    if (state.attendanceCount >= 5) {
+      throw Exception('오늘 출석체크를 모두 완료했습니다.');
     }
 
     // Mock: 1초 지연
     await Future.delayed(const Duration(seconds: 1));
 
     state = state.copyWith(
-      attendanceChecked: true,
+      attendanceCount: state.attendanceCount + 1,
       totalTickets: state.totalTickets + 3, // 출석체크 보상 3장
     );
 
@@ -283,7 +296,7 @@ class MockUserProfileNotifier extends StateNotifier<MockUserProfile> {
     if (state.lastResetDate.isBefore(today)) {
       state = state.copyWith(
         todaySteps: 0,
-        attendanceChecked: false,
+        attendanceCount: 0,
         adsWatchedToday: 0,
         stepsRewards: {
           1000: false,

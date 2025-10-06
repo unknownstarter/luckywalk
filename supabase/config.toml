@@ -110,10 +110,10 @@ auth_token = "env(SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN)"
 # 4152127777 = "123456"
 
 # Configure one of the supported captcha providers: `hcaptcha`, `turnstile`.
-[auth.captcha]
-enabled = false
-provider = "hcaptcha"
-secret = "env(SUPABASE_AUTH_CAPTCHA_SECRET)"
+# [auth.captcha]
+# enabled = false
+# provider = "hcaptcha"
+# secret = "env(SUPABASE_AUTH_CAPTCHA_SECRET)"
 
 # Use an external OAuth provider. The full list of providers are: `apple`, `azure`, `bitbucket`,
 # `discord`, `facebook`, `github`, `gitlab`, `google`, `keycloak`, `linkedin`, `notion`, `twitch`,
@@ -134,11 +134,11 @@ client_id = "env(SUPABASE_AUTH_EXTERNAL_KAKAO_CLIENT_ID)"
 secret = "env(SUPABASE_AUTH_EXTERNAL_KAKAO_SECRET)"
 redirect_uri = "env(SUPABASE_AUTH_EXTERNAL_KAKAO_REDIRECT_URI)"
 
-[edge_functions]
-enabled = true
-# Configure one of the supported request policies: `oneshot`, `per_worker`.
-# Use `oneshot` for hot reload, or `per_worker` for load testing.
-request_policy = "oneshot"
+# [edge_functions]
+# enabled = true
+# # Configure one of the supported request policies: `oneshot`, `per_worker`.
+# # Use `oneshot` for hot reload, or `per_worker` for load testing.
+# request_policy = "oneshot"
 
 [analytics]
 enabled = false

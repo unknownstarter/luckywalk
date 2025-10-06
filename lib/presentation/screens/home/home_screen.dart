@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../providers/mock_data_providers.dart';
+import '../../../core/permissions/permission_manager.dart';
+import '../../../core/utils/index.dart';
 import '../../shared/index.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -13,6 +15,44 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  bool _permissionsRequested = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _requestPermissions();
+  }
+
+  Future<void> _requestPermissions() async {
+    if (_permissionsRequested) return;
+    _permissionsRequested = true;
+
+    try {
+      final permissions = await PermissionManager.requestAllPermissions();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '권한 요청 완료: 알림 ${permissions['notification']! ? '허용' : '거부'}, '
+              '걸음수 ${permissions['activity']! ? '허용' : '거부'}',
+            ),
+            backgroundColor:
+                permissions['notification']! && permissions['activity']!
+                ? Colors.green
+                : Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('권한 요청 실패: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final homeData = ref.watch(mockHomeDataProvider);
@@ -20,121 +60,114 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final userProfile = homeData['userProfile'] as MockUserProfile;
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      appBar: AppBar(
-        title: const AppText('LuckyWalk', style: AppTextStyle.title),
-        backgroundColor: AppColors.primaryBlue,
-        foregroundColor: AppColors.textInverse,
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            child: const Icon(Icons.emoji_events, color: AppColors.textInverse),
+      backgroundColor: const Color(0xFFF2F4F6),
+      body: Column(
+        children: [
+          // 상단 블루 배경 영역
+          _buildTopSection(currentRound),
+
+          // 메인 콘텐츠 영역
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  // 매일 출석체크 복권
+                  _buildAttendanceSection(userProfile),
+                  const SizedBox(height: 16),
+
+                  // 광고 영역
+                  _buildAdBanner(),
+                  const SizedBox(height: 16),
+
+                  // 오늘 걸은만큼 받는 복권
+                  _buildStepsSection(userProfile),
+                  const SizedBox(height: 16),
+
+                  // 광고보고 받는 보너스 복권
+                  _buildAdsSection(userProfile),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+    );
+  }
+
+  Widget _buildTopSection(MockRound currentRound) {
+    return Container(
+      height: 435,
+      decoration: const BoxDecoration(color: Color(0xFF5DB4FF)),
+      child: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 현재 회차 정보
-            _buildRoundInfo(currentRound),
-            const SizedBox(height: 24),
+            // 상태바
+            const SizedBox(height: 44),
 
-            // 매일 출석체크 복권
-            _buildAttendanceCard(userProfile),
+            // 앱 이름
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  AppText(
+                    'LuckyWalk',
+                    style: AppTextStyle.logoMain,
+                    color: Colors.white,
+                  ),
+                  const Spacer(),
+                  const Icon(Icons.emoji_events, color: Colors.white, size: 24),
+                ],
+              ),
+            ),
+
             const SizedBox(height: 16),
 
-            // 광고 영역
-            _buildAdBanner(),
-            const SizedBox(height: 16),
-
-            // 오늘 걸은만큼 받는 특권
-            _buildStepsRewardCard(userProfile),
-            const SizedBox(height: 16),
-
-            // 광고보고 받는 보너스 복권
-            _buildAdsRewardCard(userProfile),
-            const SizedBox(height: 16),
-
-            // 초대하기
-            _buildReferralCard(),
+            // 로또 정보 카드
+            LottoInfoCard(
+              roundNumber: '${LottoDateTime.getNextRoundNumber()}회차',
+              totalPrize:
+                  '${currentRound.totalPrize.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원',
+              announcementTime: LottoDateTime.getAnnouncementTimeString(),
+              daysLeft: '${LottoDateTime.getDaysUntilAnnouncement()}일 남음',
+              onHowToTap: () {
+                context.go('/how-it-works');
+              },
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildRoundInfo(MockRound currentRound) {
-    return AppCard(
-      padding: const EdgeInsets.all(20),
-      backgroundColor: AppColors.surfaceLight,
+  Widget _buildAttendanceSection(MockUserProfile userProfile) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFF0F0F0)),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.account_balance_wallet,
-                color: AppColors.primaryBlue,
-                size: 24,
-              ),
-              const SizedBox(width: 8),
-              const AppText('진행 중인 로또6/45', style: AppTextStyle.subtitle),
-              const Spacer(),
-              const AppBadge(
-                text: '3일 남음',
-                backgroundColor: AppColors.warningOrange,
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
           AppText(
-            '${currentRound.roundNumber}회차',
+            '매일 출석체크 복권',
             style: AppTextStyle.title,
-            color: AppColors.textSecondary,
-          ),
-          const SizedBox(height: 8),
-          const AppText(
-            '이번주 총 당첨금',
-            style: AppTextStyle.subtitle,
-            color: AppColors.textSecondary,
-          ),
-          const SizedBox(height: 4),
-          AppText(
-            '${currentRound.totalPrize.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원',
-            style: AppTextStyle.headline2,
-            color: AppColors.primaryBlue,
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              const Icon(
-                Icons.access_time,
-                size: 16,
-                color: AppColors.textSecondary,
-              ),
-              const SizedBox(width: 4),
-              const AppText(
-                '2025.09.29 오후 9시 발표 예정',
-                style: AppTextStyle.body,
-                color: AppColors.textSecondary,
-              ),
-            ],
+            color: AppColors.textPrimary,
           ),
           const SizedBox(height: 16),
-          GestureDetector(
-            onTap: () {
-              // TODO: 어떻게 하는지 궁금해요 페이지로 이동
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('어떻게 하는지 궁금해요 페이지로 이동')),
-              );
-            },
-            child: const AppText(
-              '어떻게 하는지 궁금해요 >',
-              style: AppTextStyle.body,
-              color: AppColors.primaryBlue,
-            ),
+
+          RewardCard(
+            title: '하루 한번 출첵하고',
+            subtitle: '복권 3장 받기 (${userProfile.attendanceCount}/5)',
+            icon: Icons.calendar_today,
+            buttonText: userProfile.attendanceCount >= 5 ? '완료' : '받기',
+            isEnabled: userProfile.attendanceCount < 5,
+            onPressed: userProfile.attendanceCount < 5
+                ? _handleAttendanceCheck
+                : null,
           ),
         ],
       ),
@@ -143,278 +176,165 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildAdBanner() {
     return Container(
-      width: double.infinity,
-      height: 100,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      height: 60,
       decoration: BoxDecoration(
-        color: Colors.black,
-        borderRadius: BorderRadius.circular(12),
+        color: const Color(0xFF121313),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: const Center(
-        child: Text(
-          '광고 영역',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        child: AppText('광고 영역', style: AppTextStyle.title, color: Colors.red),
       ),
     );
   }
 
-  Widget _buildAttendanceCard(MockUserProfile userProfile) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              '매일 출석체크 복권',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                const Icon(
-                  Icons.calendar_today,
-                  color: Color(0xFF1E3A8A),
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                const Expanded(
-                  child: Text(
-                    '하루 한번 출첵하고\n복권 3장 받기',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: userProfile.attendanceChecked
-                      ? null
-                      : () => _handleAttendanceCheck(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1E3A8A),
-                  ),
-                  child: Text(userProfile.attendanceChecked ? '완료' : '받기'),
-                ),
-              ],
-            ),
-          ],
-        ),
+  Widget _buildStepsSection(MockUserProfile userProfile) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFF0F0F0)),
       ),
-    );
-  }
-
-  Widget _buildStepsRewardCard(MockUserProfile userProfile) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Text(
-                  '오늘 걸은만큼 받는 복권',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const Spacer(),
-                Text(
-                  '${userProfile.todaySteps}걸음',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF1E3A8A),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            _buildStepRewardItem(
-              '1,000 걸음 걷고',
-              1000,
-              1,
-              userProfile.stepsRewards[1000] ?? false,
-              userProfile.todaySteps >= 1000,
-            ),
-            _buildStepRewardItem(
-              '2,000 걸음 걷고',
-              2000,
-              1,
-              userProfile.stepsRewards[2000] ?? false,
-              userProfile.todaySteps >= 2000,
-            ),
-            _buildStepRewardItem(
-              '3,000 걸음 걷고',
-              3000,
-              1,
-              userProfile.stepsRewards[3000] ?? false,
-              userProfile.todaySteps >= 3000,
-            ),
-            _buildStepRewardItem(
-              '4,000 걸음 걷고',
-              4000,
-              3,
-              userProfile.stepsRewards[4000] ?? false,
-              userProfile.todaySteps >= 4000,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStepRewardItem(
-    String title,
-    int steps,
-    int rewardCount,
-    bool isClaimed,
-    bool isAvailable,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.emoji_events, color: Colors.amber, size: 20),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              '$title: 복권 $rewardCount장 받기',
-              style: TextStyle(color: isClaimed ? Colors.grey : Colors.black),
-            ),
+          AppText(
+            '오늘 걸은만큼 받는 복권',
+            style: AppTextStyle.title,
+            color: AppColors.textPrimary,
           ),
-          ElevatedButton(
-            onPressed: isClaimed
-                ? null
-                : (isAvailable ? () => _handleStepsReward(steps) : null),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isClaimed
-                  ? Colors.grey
-                  : (isAvailable ? const Color(0xFF1E3A8A) : Colors.grey),
-            ),
-            child: Text(isClaimed ? '완료' : (isAvailable ? '받기' : '잠김')),
-          ),
+          const SizedBox(height: 16),
+
+          // 10단계 걸음수 보상
+          ..._buildStepsRewards(userProfile),
         ],
       ),
     );
   }
 
-  Widget _buildAdsRewardCard(MockUserProfile userProfile) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Text(
-                  '광고보고 받는 보너스 복권',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const Spacer(),
-                Text(
-                  '${userProfile.adsWatchedToday}/${userProfile.maxAdsToday}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF1E3A8A),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            _buildAdRewardItem(
-              '1번째 광고보고',
-              1,
-              1,
-              userProfile.adsRewards[1] ?? false,
-              true,
-            ),
-            _buildAdRewardItem(
-              '2번째 광고보고',
-              2,
-              1,
-              userProfile.adsRewards[2] ?? false,
-              userProfile.adsRewards[1] == true,
-            ),
-            _buildAdRewardItem(
-              '3번째 광고보고',
-              3,
-              1,
-              userProfile.adsRewards[3] ?? false,
-              userProfile.adsRewards[2] == true,
-            ),
-            _buildAdRewardItem(
-              '4번째 광고보고',
-              4,
-              3,
-              userProfile.adsRewards[4] ?? false,
-              userProfile.adsRewards[3] == true,
-            ),
-          ],
-        ),
+  Widget _buildAdsSection(MockUserProfile userProfile) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFF0F0F0)),
       ),
-    );
-  }
-
-  Widget _buildAdRewardItem(
-    String title,
-    int sequence,
-    int rewardCount,
-    bool isClaimed,
-    bool isAvailable,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.card_giftcard, color: Colors.red, size: 20),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              '$title: 복권 $rewardCount장 받기',
-              style: TextStyle(color: isClaimed ? Colors.grey : Colors.black),
-            ),
+          AppText(
+            '광고보고 받는 보너스 복권',
+            style: AppTextStyle.title,
+            color: AppColors.textPrimary,
           ),
-          ElevatedButton(
-            onPressed: isClaimed
-                ? null
-                : (isAvailable ? () => _handleAdReward(sequence) : null),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isClaimed
-                  ? Colors.grey
-                  : (isAvailable ? const Color(0xFF1E3A8A) : Colors.grey),
-            ),
-            child: Text(isClaimed ? '완료' : (isAvailable ? '받기' : '잠김')),
-          ),
+          const SizedBox(height: 16),
+
+          // 10단계 광고 보상
+          ..._buildAdsRewards(userProfile),
         ],
       ),
     );
   }
 
-  Widget _buildReferralCard() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              '친구 초대하고 복권 받기',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: () => context.go('/referral'),
-              child: const Text('친구 초대하기'),
-            ),
-          ],
+  // Helper methods
+  List<Widget> _buildStepsRewards(MockUserProfile userProfile) {
+    final stepsConfig = [
+      {'steps': 1000, 'tickets': 1},
+      {'steps': 2000, 'tickets': 1},
+      {'steps': 3000, 'tickets': 1},
+      {'steps': 4000, 'tickets': 3},
+      {'steps': 5000, 'tickets': 3},
+      {'steps': 6000, 'tickets': 3},
+      {'steps': 7000, 'tickets': 5},
+      {'steps': 8000, 'tickets': 5},
+      {'steps': 9000, 'tickets': 5},
+      {'steps': 10000, 'tickets': 10},
+    ];
+
+    return stepsConfig.map((config) {
+      final steps = config['steps'] as int;
+      final tickets = config['tickets'] as int;
+
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: RewardCard(
+          title:
+              '${steps.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} 걸음 걷고',
+          subtitle: '복권 $tickets장 받기',
+          icon: Icons.emoji_events,
+          buttonText: _getStepsButtonText(steps, userProfile),
+          isEnabled: _isStepsRewardEnabled(steps, userProfile),
+          onPressed: _isStepsRewardEnabled(steps, userProfile)
+              ? () => _handleStepsReward(steps)
+              : null,
         ),
-      ),
-    );
+      );
+    }).toList();
   }
 
+  List<Widget> _buildAdsRewards(MockUserProfile userProfile) {
+    final adsConfig = [
+      {'sequence': 1, 'tickets': 1},
+      {'sequence': 2, 'tickets': 1},
+      {'sequence': 3, 'tickets': 1},
+      {'sequence': 4, 'tickets': 3},
+      {'sequence': 5, 'tickets': 3},
+      {'sequence': 6, 'tickets': 3},
+      {'sequence': 7, 'tickets': 5},
+      {'sequence': 8, 'tickets': 5},
+      {'sequence': 9, 'tickets': 5},
+      {'sequence': 10, 'tickets': 10},
+    ];
+
+    return adsConfig.map((config) {
+      final sequence = config['sequence'] as int;
+      final tickets = config['tickets'] as int;
+
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: RewardCard(
+          title: '${sequence}번째 광고보고',
+          subtitle: '복권 $tickets장 받기',
+          icon: Icons.card_giftcard,
+          buttonText: _getAdsButtonText(sequence, userProfile),
+          isEnabled: _isAdsRewardEnabled(sequence, userProfile),
+          onPressed: _isAdsRewardEnabled(sequence, userProfile)
+              ? () => _handleAdReward(sequence)
+              : null,
+        ),
+      );
+    }).toList();
+  }
+
+  String _getStepsButtonText(int steps, MockUserProfile userProfile) {
+    if (userProfile.stepsRewards[steps] == true) return '완료';
+    if (userProfile.todaySteps >= steps) return '받기';
+    return '잠김';
+  }
+
+  bool _isStepsRewardEnabled(int steps, MockUserProfile userProfile) {
+    return userProfile.stepsRewards[steps] != true &&
+        userProfile.todaySteps >= steps;
+  }
+
+  String _getAdsButtonText(int sequence, MockUserProfile userProfile) {
+    if (userProfile.adsRewards[sequence] == true) return '완료';
+    if (sequence == 1) return '받기';
+    if (userProfile.adsRewards[sequence - 1] == true) return '받기';
+    return '잠김';
+  }
+
+  bool _isAdsRewardEnabled(int sequence, MockUserProfile userProfile) {
+    if (userProfile.adsRewards[sequence] == true) return false;
+    if (sequence == 1) return true;
+    return userProfile.adsRewards[sequence - 1] == true;
+  }
+
+  // Event handlers
   Future<void> _handleAttendanceCheck() async {
     try {
       await ref.read(mockUserProfileProvider.notifier).checkAttendance();

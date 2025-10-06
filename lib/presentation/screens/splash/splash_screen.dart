@@ -25,13 +25,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       duration: const Duration(seconds: 2),
       vsync: this,
     );
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
 
     _animationController.forward();
   }
@@ -77,14 +73,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   'LuckyWalk',
                   style: TextStyle(
                     fontFamily: 'Baloo',
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 60,
+                    fontWeight: FontWeight.w400,
                     color: Colors.white,
-                    letterSpacing: 1.2,
+                    letterSpacing: 0,
                   ),
                 ),
                 const SizedBox(height: 48),
-                
+
                 // 로딩 상태 표시
                 _buildLoadingState(authState),
               ],
@@ -99,26 +95,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (authState.error != null) {
       return Column(
         children: [
-          const Icon(
-            Icons.error_outline,
-            color: Colors.red,
-            size: 32,
-          ),
+          const Icon(Icons.error_outline, color: Colors.red, size: 32),
           const SizedBox(height: 16),
           const Text(
             '오류가 발생했습니다',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            ),
+            style: TextStyle(color: Colors.white, fontSize: 16),
           ),
           const SizedBox(height: 8),
           Text(
             authState.error!,
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 12,
-            ),
+            style: const TextStyle(color: Colors.white70, fontSize: 12),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
@@ -136,18 +122,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (!authState.hasNetworkConnection) {
       return Column(
         children: [
-          const Icon(
-            Icons.wifi_off,
-            color: Colors.orange,
-            size: 32,
-          ),
+          const Icon(Icons.wifi_off, color: Colors.orange, size: 32),
           const SizedBox(height: 16),
           const Text(
             '인터넷 연결을 확인해주세요',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            ),
+            style: TextStyle(color: Colors.white, fontSize: 16),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
@@ -164,26 +143,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (!authState.isVersionSupported) {
       return Column(
         children: [
-          const Icon(
-            Icons.system_update,
-            color: Colors.orange,
-            size: 32,
-          ),
+          const Icon(Icons.system_update, color: Colors.orange, size: 32),
           const SizedBox(height: 16),
           const Text(
             '앱 업데이트가 필요합니다',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            ),
+            style: TextStyle(color: Colors.white, fontSize: 16),
           ),
           const SizedBox(height: 8),
           Text(
             '현재 버전: ${authState.appVersion ?? 'unknown'}',
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 12,
-            ),
+            style: const TextStyle(color: Colors.white70, fontSize: 12),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
